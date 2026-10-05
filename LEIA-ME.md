@@ -41,3 +41,10 @@ Site estático, pronto para subir em qualquer hospedagem (Hostinger, Vercel, Net
 ## Testar localmente
 
 Abra um terminal nesta pasta e rode `python3 -m http.server 8000`, depois acesse http://localhost:8000. Abrir o `index.html` direto com duplo clique também funciona, mas alguns navegadores bloqueiam vídeos assim.
+
+## Publicação
+
+- GitHub (público): https://github.com/vitorhugofps/site-a-mala
+- Vercel: projeto `site-a-mala` na conta gibson-mkt, no ar em https://site-a-mala.vercel.app
+- Para o deploy automático a cada push, conecte o repositório em Vercel › site-a-mala › Settings › Git (instalando o app da Vercel no GitHub com acesso ao `site-a-mala`).
+- Para usar marialais.com.br, adicione o domínio em Vercel › site-a-mala › Settings › Domains e aponte o DNS conforme a Vercel indicar.
