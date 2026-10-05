@@ -91,8 +91,9 @@
   }));
 
   /* =========================================================
-     Carregamento
+     Entrada: carrega e libera o som com um clique
      ========================================================= */
+  const gate = $('[data-gate]');
   const pctEl = $('[data-pct]');
   const prog = { v: 0 };
   const loadTween = gsap.to(prog, { v: 88, duration: 3.2, ease: 'power2.out', onUpdate: () => (pctEl.textContent = Math.round(prog.v)) });
@@ -103,28 +104,41 @@
   });
   Promise.race([Promise.all([document.fonts.ready, videoReady]), new Promise((r) => setTimeout(r, 6500))]).then(() => {
     loadTween.kill();
-    gsap.to(prog, { v: 100, duration: 0.5, ease: 'power1.out', onUpdate: () => (pctEl.textContent = Math.round(prog.v)), onComplete: reveal });
+    gsap.to(prog, { v: 100, duration: 0.5, ease: 'power1.out', onUpdate: () => (pctEl.textContent = Math.round(prog.v)), onComplete: () => { gate.classList.add('is-ready'); $('[data-enter="sound"]').focus({ preventScroll: true }); } });
   });
+  const behind = ['header.nav', 'main', 'footer', '[data-dock]', '.wa-float'].map((s) => $(s)).filter(Boolean);
+  behind.forEach((el) => el.setAttribute('inert', ''));
+  let entered = false;
+  $$('[data-enter]').forEach((b) => b.addEventListener('click', () => {
+    if (entered) return;
+    entered = true;
+    if (b.dataset.enter === 'sound') music.start();
+    reveal();
+  }));
 
   function reveal() {
-    const loader = $('.loader');
     intro.play().catch(() => {});
-    const tl = gsap.timeline({ onComplete: () => { loader.remove(); } });
-    tl.to('.loader__eq i', { scaleY: 0.05, duration: 0.5, stagger: 0.05, ease: 'power3.in' })
-      .to(loader, { clipPath: 'inset(0 0 100% 0)', duration: 1.1, ease: 'expo.inOut' }, '-=0.1')
-      .add(() => { document.body.classList.remove('is-loading'); lenis && lenis.start(); ScrollTrigger.refresh(); }, '-=0.6');
+    const tl = gsap.timeline({ onComplete: () => gate.remove() });
+    tl.to('.gate__inner', { y: -40, opacity: 0, duration: 0.6, ease: 'power3.in' })
+      .to(gate, { clipPath: 'inset(0 0 100% 0)', duration: 1.1, ease: 'expo.inOut' }, '-=0.1')
+      .add(() => {
+        behind.forEach((el) => el.removeAttribute('inert'));
+        document.body.classList.remove('is-loading'); lenis && lenis.start(); ScrollTrigger.refresh();
+        $('[data-dock]').classList.add('is-visible');
+        const h1 = $('.abertura__title'); h1.setAttribute('tabindex', '-1'); h1.focus({ preventScroll: true });
+      }, '-=0.6');
     if (!reduce) {
-      tl.fromTo('.abertura__bars span', { height: '50vh' }, { height: isMobile() ? '6vh' : '11vh', duration: 1.8, ease: 'expo.inOut' }, '-=0.9')
+      tl.fromTo('.abertura__bars span', { height: '50vh' }, { height: isMobile() ? '5vh' : '9vh', duration: 1.8, ease: 'expo.inOut' }, '-=0.9')
         .from('.abertura__media', { scale: 1.25, duration: 2.6, ease: 'expo.out' }, '<')
-        .from(titleSplit ? titleSplit.chars : '.abertura__title', { yPercent: 120, rotate: 6, opacity: 0, duration: 1.4, stagger: 0.035 }, '-=1.2')
-        .from('.abertura__kicker, .abertura__foot, .abertura__scroll', { y: 24, opacity: 0, duration: 1.2, stagger: 0.12 }, '-=1.1');
+        .from(titleSplit ? titleSplit.chars : '.abertura__title', { yPercent: 110, opacity: 0, duration: 1.2, stagger: 0.025 }, '-=1.2')
+        .from('.abertura__kicker, .abertura__foot, .abertura__scroll', { y: 24, opacity: 0, duration: 1.2, stagger: 0.12 }, '-=1.0');
     }
   }
 
   /* split de títulos (antes do reveal) */
   let titleSplit = null;
   if (!reduce) {
-    titleSplit = new SplitText('.abertura__title', { type: 'chars,words', charsClass: 'char', wordsClass: 'word', aria: 'auto' });
+    titleSplit = new SplitText('.abertura__title > span', { type: 'words,chars', wordsClass: 'word', charsClass: 'char' });
   }
 
   /* =========================================================
@@ -174,7 +188,7 @@
       lastY = y;
     }
   });
-  ScrollTrigger.create({ trigger: '#manifesto', start: 'top 60%', onEnter: () => waFloat.classList.add('is-visible'), onLeaveBack: () => waFloat.classList.remove('is-visible') });
+  ScrollTrigger.create({ trigger: '#sobre', start: 'top 60%', onEnter: () => waFloat.classList.add('is-visible'), onLeaveBack: () => waFloat.classList.remove('is-visible') });
 
   const menu = $('#menu');
   const menuBtn = $('[data-menu-toggle]');
@@ -210,8 +224,11 @@
   const player = $('[data-player]');
   const frame = $('[data-player-frame]');
   let lastFocus = null;
+  let musicWasOn = false;
   function openPlayer(id, title, start = 0) {
     if (PREVIEW) { openExternal(`https://www.youtube.com/watch?v=${encodeURIComponent(id)}${start ? `&t=${start}s` : ''}`); return; }
+    musicWasOn = music.wanted;
+    if (musicWasOn) music.pause();
     lastFocus = document.activeElement;
     const ifr = document.createElement('iframe');
     ifr.src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}?autoplay=1&rel=0&playsinline=1${start ? `&start=${start}` : ''}`;
@@ -228,7 +245,7 @@
     gsap.fromTo('.player__box', { y: 40, opacity: 0, scale: 0.96 }, { y: 0, opacity: 1, scale: 1, duration: 0.8 });
   }
   function closePlayer() { player.close(); }
-  player.addEventListener('close', () => { frame.innerHTML = ''; lenis && lenis.start(); lastFocus && lastFocus.focus && lastFocus.focus(); });
+  player.addEventListener('close', () => { frame.innerHTML = ''; lenis && lenis.start(); lastFocus && lastFocus.focus && lastFocus.focus(); if (musicWasOn) music.play(); });
   player.addEventListener('click', (e) => { if (e.target === player) closePlayer(); });
   $('[data-player-close]').addEventListener('click', closePlayer);
   document.addEventListener('click', (e) => {
@@ -240,6 +257,109 @@
   document.addEventListener('keydown', (e) => {
     if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('li[data-yt]')) { e.preventDefault(); e.target.click(); }
   });
+
+  /* =========================================================
+     MÚSICA DO DVD: áudio contínuo + player flutuante + análise de frequência
+     ========================================================= */
+  const music = (() => {
+    const el = $('[data-music]');
+    const dock = $('[data-dock]');
+    const playBtn = $('[data-dock-play]');
+    const ring = $('[data-dock-ring]');
+    const bar = $('[data-dock-bar]');
+    const seek = $('[data-dock-seek]');
+    const titleEl = $('[data-dock-title]');
+    const cv = $('[data-dock-eq]');
+    const ctx2d = cv.getContext('2d');
+    const LIST = [
+      { src: 'assets/audio/traumatizou.m4a', title: 'Traumatizou' },
+      { src: 'assets/audio/reinicia.m4a', title: 'Reinicia (part. Naessa)' }
+    ];
+    let idx = 0, ac = null, analyser = null, gain = null, data = null, loaded = false, wanted = false;
+    function load(i) { idx = (i + LIST.length) % LIST.length; el.src = LIST[idx].src; titleEl.textContent = LIST[idx].title; loaded = true; }
+    function graph() {
+      if (ac) return;
+      try {
+        const AC = window.AudioContext || window.webkitAudioContext;
+        ac = new AC();
+        const srcNode = ac.createMediaElementSource(el);
+        analyser = ac.createAnalyser(); analyser.fftSize = 128; analyser.smoothingTimeConstant = 0.78;
+        gain = ac.createGain(); gain.gain.value = 0;
+        srcNode.connect(analyser); analyser.connect(gain); gain.connect(ac.destination);
+        data = new Uint8Array(analyser.frequencyBinCount);
+      } catch (e) { ac = null; }
+    }
+    function fadeTo(v, t = 1.2) { if (gain && ac) { gain.gain.cancelScheduledValues(ac.currentTime); gain.gain.setTargetAtTime(v, ac.currentTime, t / 3); } }
+    async function play() {
+      if (!loaded) load(idx);
+      graph();
+      if (ac && ac.state === 'suspended') await ac.resume().catch(() => {});
+      wanted = true;
+      try { await el.play(); fadeTo(0.9); } catch (e) { wanted = false; }
+      sync();
+    }
+    function pause(fade = true) {
+      wanted = false;
+      if (fade && gain) { fadeTo(0, 0.4); setTimeout(() => { if (!wanted) el.pause(); }, 380); } else el.pause();
+      sync();
+    }
+    function sync() {
+      const on = wanted && !el.paused;
+      dock.classList.toggle('is-playing', wanted);
+      playBtn.setAttribute('aria-label', wanted ? 'Pausar música' : 'Tocar música');
+      if (on) loop();
+    }
+    playBtn.addEventListener('click', () => (wanted ? pause() : play()));
+    $('[data-dock-next]').addEventListener('click', () => { load(idx + 1); if (wanted) play(); });
+    el.addEventListener('ended', () => { load(idx + 1); play(); });
+    el.addEventListener('timeupdate', () => {
+      const p = el.duration ? el.currentTime / el.duration : 0;
+      ring.style.strokeDashoffset = String(1 - p);
+      bar.style.transform = `scaleX(${p})`;
+      seek.setAttribute('aria-valuenow', Math.round(p * 100));
+    });
+    const seekTo = (clientX) => { const r = seek.getBoundingClientRect(); if (el.duration) el.currentTime = clamp((clientX - r.left) / r.width, 0, 1) * el.duration; };
+    seek.addEventListener('click', (e) => seekTo(e.clientX));
+    seek.addEventListener('keydown', (e) => {
+      if (!el.duration) return;
+      if (e.key === 'ArrowRight') el.currentTime = Math.min(el.duration, el.currentTime + 5);
+      if (e.key === 'ArrowLeft') el.currentTime = Math.max(0, el.currentTime - 5);
+    });
+    // níveis de frequência (0..1) para quem quiser reagir à música
+    function levels(n) {
+      const out = new Array(n).fill(0);
+      if (!analyser || el.paused) return out;
+      analyser.getByteFrequencyData(data);
+      const per = Math.floor((data.length * 0.7) / n);
+      for (let i = 0; i < n; i++) { let s = 0; for (let k = 0; k < per; k++) s += data[i * per + k]; out[i] = s / per / 255; }
+      return out;
+    }
+    let raf = 0;
+    function loop() {
+      cancelAnimationFrame(raf);
+      const W = cv.width, H = cv.height, N = 16;
+      const draw = () => {
+        const lv = levels(N);
+        ctx2d.clearRect(0, 0, W, H);
+        ctx2d.fillStyle = '#fff';
+        const bw = W / N;
+        for (let i = 0; i < N; i++) {
+          const h = Math.max(2, (analyser ? lv[i] : 0.15 + 0.1 * Math.sin(performance.now() / 300 + i)) * H);
+          ctx2d.globalAlpha = 0.35 + lv[i] * 0.65;
+          ctx2d.fillRect(i * bw + 1, (H - h) / 2, bw - 2, h);
+        }
+        ctx2d.globalAlpha = 1;
+        if (!el.paused) raf = requestAnimationFrame(draw);
+      };
+      draw();
+    }
+    el.addEventListener('play', loop);
+    el.addEventListener('pause', () => { cancelAnimationFrame(raf); ctx2d.clearRect(0, 0, cv.width, cv.height); });
+    return { start: play, play, pause, levels, get playing() { return wanted && !el.paused; }, get wanted() { return wanted; } };
+  })();
+
+  // no celular, o player se recolhe quando o formulário de contratação está na tela
+  new IntersectionObserver(([e]) => { $('[data-dock]').classList.toggle('is-tucked', e.isIntersecting && innerWidth <= 860); }, { threshold: 0.05 }).observe($('[data-booking]'));
 
   /* botões de projeto abrem o WhatsApp com a mensagem certa */
   $$('[data-wa]').forEach((a) => {
@@ -255,95 +375,10 @@
   });
 
   /* =========================================================
-     Linhas de neon (retângulos do cenário do DVD)
-     ========================================================= */
-  const neons = $$('svg.neon');
-  function sizeNeons() {
-    neons.forEach((svg) => {
-      const r = svg.getBoundingClientRect();
-      const rect = svg.querySelector('rect');
-      rect.setAttribute('x', 1); rect.setAttribute('y', 1);
-      rect.setAttribute('width', Math.max(0, r.width - 2));
-      rect.setAttribute('height', Math.max(0, r.height - 2));
-      rect.setAttribute('rx', svg.classList.contains('neon--cta') ? 22 : 3);
-    });
-  }
-  sizeNeons();
-  addEventListener('resize', sizeNeons);
-  if ('ResizeObserver' in window) { const ro = new ResizeObserver(sizeNeons); neons.forEach((n) => ro.observe(n)); }
-  const drawNeon = (svg, delay = 0) => {
-    const rect = svg.querySelector('rect');
-    gsap.set(rect, { strokeDasharray: 1, strokeDashoffset: 1 });
-    return gsap.timeline({ delay })
-      .to(rect, { strokeDashoffset: 0, duration: 1.8, ease: 'power2.inOut' })
-      .fromTo(svg, { opacity: 1 }, { keyframes: { opacity: [1, 0.25, 1, 0.5, 1] }, duration: 0.5, ease: 'none' }, '-=0.4');
-  };
-
-  /* =========================================================
      Faíscas do logo (canvas)
      ========================================================= */
-  const sparks = (() => {
-    const cv = $('[data-sparks]');
-    const ctx = cv.getContext('2d');
-    const logo = $('[data-logo]');
-    let W = 0, H = 0, dpr = 1, lw = 0, lh = 0;
-    const P = [];
-    let active = false, last = performance.now(), flare = 0;
-    function size() {
-      dpr = Math.min(2, devicePixelRatio || 1);
-      lw = logo.offsetWidth; lh = logo.offsetHeight;
-      W = lw * 1.2; H = lh * 1.2;
-      cv.width = W * dpr; cv.height = H * dpr;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    }
-    const point = (deg) => {
-      const a = (deg * Math.PI) / 180;
-      const cx = lw * (0.1 + 0.699), cy = lh * (0.1 + 0.5), R = lw * 0.281;
-      return [cx + R * Math.sin(a), cy - R * Math.cos(a)];
-    };
-    function emit(deg, n = 3, power = 1) {
-      for (let i = 0; i < n; i++) {
-        const [x, y] = point(deg + (Math.random() - 0.5) * 4);
-        const a = Math.random() * Math.PI * 2, s = (0.3 + Math.random() * 1.4) * power;
-        P.push({ x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s - 0.2, life: 1, size: 0.6 + Math.random() * 2.2, hue: Math.random() < 0.35 ? 195 : 220 });
-      }
-      if (P.length > 160) P.splice(0, P.length - 160);
-    }
-    function star(x, y, r, alpha) {
-      ctx.globalAlpha = alpha;
-      const g = ctx.createRadialGradient(x, y, 0, x, y, r * 4);
-      g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(0.3, 'rgba(160,220,255,.5)'); g.addColorStop(1, 'rgba(95,212,255,0)');
-      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r * 4, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = '#fff';
-      ctx.fillRect(x - r * 6, y - 0.5, r * 12, 1);
-      ctx.fillRect(x - 0.5, y - r * 6, 1, r * 12);
-    }
-    function frame(now) {
-      const dt = Math.min(50, now - last) / 16.67; last = now;
-      ctx.clearRect(0, 0, W, H);
-      ctx.globalCompositeOperation = 'lighter';
-      if (active && Math.random() < 0.18) emit(306 + Math.random() * 290, 1, 0.4);
-      for (let i = P.length - 1; i >= 0; i--) {
-        const p = P[i];
-        p.x += p.vx * dt; p.y += p.vy * dt; p.vy += 0.01 * dt; p.life -= 0.012 * dt;
-        if (p.life <= 0) { P.splice(i, 1); continue; }
-        ctx.globalAlpha = p.life;
-        ctx.fillStyle = `hsl(${p.hue} 100% ${70 + p.life * 30}%)`;
-        ctx.beginPath(); ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2); ctx.fill();
-      }
-      if (flare > 0.01) {
-        const [fx, fy] = point(28);
-        star(fx, fy, 2.6 + Math.sin(now / 380) * 0.8, flare * (0.75 + Math.sin(now / 520) * 0.25));
-      }
-      ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
-      if (running) requestAnimationFrame(frame);
-    }
-    let running = false;
-    const start = () => { if (!running) { running = true; last = performance.now(); requestAnimationFrame(frame); } };
-    const stop = () => { running = false; };
-    size(); addEventListener('resize', size);
-    return { emit, start, stop, set active(v) { active = v; }, set flare(v) { flare = v; }, size };
-  })();
+  // faíscas desativadas: direção minimalista em preto e prata
+  const sparks = { emit() {}, start() {}, stop() {}, size() {}, set active(v) {}, set flare(v) {} };
 
   /* =========================================================
      ABERTURA → LOGO (cena presa)
@@ -356,6 +391,15 @@
 
   // equalizador vivo nas barras do logo
   const eq = bars.map((b) => gsap.to(b, { scaleY: 'random(0.35, 1)', duration: 'random(0.22, 0.5)', ease: 'sine.inOut', repeat: -1, yoyo: true, repeatRefresh: true, paused: true }));
+
+  // com a música tocando, as barras do logo viram um equalizador de verdade
+  gsap.ticker.add(() => {
+    if (!music.playing) return;
+    const r = stage.getBoundingClientRect();
+    if (r.bottom < 0 || r.top > innerHeight) return;
+    const lv = music.levels(4);
+    bars.forEach((b, i) => gsap.set(b, { scaleY: 0.3 + Math.min(1, lv[[1, 0, 2, 3][i]] * 1.25) * 0.7 }));
+  });
 
   function circleGeom() {
     const w = stage.offsetWidth, h = stage.offsetHeight;
@@ -396,12 +440,9 @@
   ScrollTrigger.addEventListener('refresh', placeLockup);
 
   if (!reduce) {
-    const circ = { r: 0, x: 0, y: 0 };
-    const applyCirc = () => {
-      wrap.style.setProperty('--r', `${circ.r}px`);
-      wrap.style.setProperty('--x', `${circ.x}px`);
-      wrap.style.setProperty('--y', `${circ.y}px`);
-    };
+    // o vídeo vira uma faixa horizontal (corte de cinema) e some antes do logo
+    const band = { t: 0, s: 0 };
+    const applyBand = () => { wrap.style.clipPath = `inset(${band.t}% ${band.s}% ${band.t}% ${band.s}%)`; };
     const sweep = { s: 0 };
     const flareObj = { v: 0 };
     let lastS = 0;
@@ -414,7 +455,7 @@
         onUpdate: (self) => {
           const on = self.progress > 0.3;
           sparks.active = self.progress > 0.55;
-          on ? (sparks.start(), eq.forEach((t) => t.play())) : eq.forEach((t) => t.pause());
+          on ? (sparks.start(), music.playing ? eq.forEach((t) => t.pause()) : eq.forEach((t) => t.play())) : eq.forEach((t) => t.pause());
         },
         onLeave: () => { sparks.stop(); eq.forEach((t) => t.pause()); },
         onEnterBack: () => sparks.start()
@@ -423,14 +464,8 @@
 
     tl.to('[data-intro-copy]', { opacity: 0, y: -80, duration: 0.12 }, 0)
       .to('.abertura__bars span', { scaleY: 0, duration: 0.1 }, 0)
-      .fromTo(circ, {
-        r: () => { const g = circleGeom(); return Math.hypot(g.w, g.h); },
-        x: () => circleGeom().w / 2,
-        y: () => circleGeom().h / 2
-      }, {
-        r: () => circleGeom().r, x: () => circleGeom().x, y: () => circleGeom().y,
-        duration: 0.36, ease: 'power2.inOut', onUpdate: applyCirc
-      }, 0.06)
+      .fromTo(band, { t: 0, s: 0 }, { t: 41, s: 6, duration: 0.3, ease: 'power2.inOut', onUpdate: applyBand }, 0.06)
+      .to(wrap, { opacity: 0, duration: 0.1 }, 0.34)
       .to('.abertura__media', { scale: 1.32, filter: 'brightness(.72) saturate(1.1)', duration: 0.42, ease: 'power1.inOut' }, 0.06)
       .to('.abertura__shade', { opacity: 0.4, duration: 0.3 }, 0.1)
       .fromTo(sweep, { s: 0 }, {
@@ -446,11 +481,9 @@
       .fromTo('[data-logo-amala]', { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.12, ease: 'power2.out' }, 0.56)
       .fromTo(logo, { '--shine': '100%' }, { '--shine': '0%', duration: 0.4 }, 0.5)
       .fromTo(logo, { scale: 1.12 }, { scale: 1, duration: 0.5, ease: 'power2.out' }, 0.3)
-      .fromTo(flareObj, { v: 0 }, { v: 1, duration: 0.1, onUpdate: () => (sparks.flare = flareObj.v) }, 0.62)
       .fromTo('[data-logo-sub]', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.14, ease: 'power2.out' }, 0.66)
       // assinatura final: MARIA LAÍS | A MALA, como na arte oficial
       .to(logo, { scale: () => lockupGeom().s, x: () => lockupGeom().dx, y: () => lockupGeom().dy, duration: 0.2, ease: 'power2.inOut' }, 0.86)
-      .to(circ, { r: () => lockupGeom().r, x: () => lockupGeom().x, y: () => lockupGeom().y, duration: 0.2, ease: 'power2.inOut', onUpdate: applyCirc }, 0.86)
       .fromTo(lockDiv, { scaleY: 0 }, { scaleY: 1, duration: 0.1, ease: 'power2.out' }, 0.98)
       .fromTo(lockWm, { clipPath: 'inset(0 100% 0 0)' }, { clipPath: 'inset(0 0% 0 0)', duration: 0.16, ease: 'power2.out' }, 1.0)
       .to({}, { duration: 0.16 });
@@ -476,36 +509,38 @@
   }
 
   /* =========================================================
-     MANIFESTO: palavras acendem com o scroll
+     SOBRE: frases enormes que correm com o scroll, com vídeo no meio
      ========================================================= */
-  const quote = $('[data-words]');
   if (!reduce) {
-    const split = new SplitText(quote, { type: 'words', wordsClass: 'word', aria: 'auto' });
-    gsap.to(split.words, {
-      opacity: 1, stagger: 0.08, ease: 'none',
-      scrollTrigger: { trigger: quote, start: 'top 78%', end: 'bottom 45%', scrub: 0.6 }
+    $$('.line').forEach((line) => {
+      const dir = +line.dataset.dir;
+      const media = line.querySelectorAll('.inmedia');
+      const range = () => Math.max(0, line.scrollWidth - innerWidth + innerWidth * 0.08);
+      gsap.fromTo(line, { x: () => (dir < 0 ? 0 : -range()) }, {
+        x: () => (dir < 0 ? -range() : 0), ease: 'none',
+        scrollTrigger: { trigger: line, start: 'top bottom', end: 'bottom top', scrub: 0.6, invalidateOnRefresh: true }
+      });
+      gsap.from(media, { width: 0, duration: 1.4, ease: 'expo.out', scrollTrigger: { trigger: line, start: 'top 85%' } });
     });
-    gsap.fromTo('.manifesto__portrait', { yPercent: 12, clipPath: 'inset(30% 0 0 0 round 999px 999px 18px 18px)' },
-      { yPercent: -6, clipPath: 'inset(0% 0 0 0 round 999px 999px 18px 18px)', ease: 'none', scrollTrigger: { trigger: '.manifesto', start: 'top bottom', end: 'center center', scrub: 1 } });
-    gsap.from('.manifesto__sign, .manifesto__body', { y: 30, opacity: 0, duration: 1.2, stagger: 0.12, scrollTrigger: { trigger: '.manifesto__sign', start: 'top 88%' } });
+    const quote = $('.sobre__quote');
+    const split = new SplitText(quote, { type: 'words', wordsClass: 'word', aria: 'auto' });
+    gsap.to(split.words, { opacity: 1, stagger: 0.08, ease: 'none', scrollTrigger: { trigger: quote, start: 'top 80%', end: 'bottom 50%', scrub: 0.6 } });
+    gsap.from('.sobre__side > *', { y: 30, opacity: 0, duration: 1.2, stagger: 0.12, scrollTrigger: { trigger: '.sobre__side', start: 'top 88%' } });
   }
 
   /* =========================================================
-     NÚMEROS: contadores + neon
+     NÚMEROS: contadores
      ========================================================= */
   $$('.num').forEach((card, i) => {
     const n = card.querySelector('[data-count]');
     const end = +n.dataset.count;
-    const svg = card.querySelector('svg.neon');
     if (reduce) { n.textContent = end; return; }
-    gsap.set(svg.querySelector('rect'), { strokeDasharray: 1, strokeDashoffset: 1 });
     ScrollTrigger.create({
       trigger: card, start: 'top 82%', once: true,
       onEnter: () => {
-        drawNeon(svg, i * 0.12);
         const o = { v: 0 };
         gsap.to(o, { v: end, duration: 2.2, delay: i * 0.12, ease: 'power3.out', onUpdate: () => (n.textContent = Math.round(o.v)) });
-        gsap.from(card.querySelector('strong'), { backgroundPosition: '100% 50%', duration: 2.4, delay: i * 0.12, ease: 'power2.out' });
+        gsap.from(card.querySelector('strong'), { yPercent: 40, opacity: 0, duration: 1.4, delay: i * 0.1, ease: 'expo.out' });
       }
     });
   });
@@ -702,77 +737,36 @@
   })();
 
   /* =========================================================
-     EXPERIÊNCIAS: painéis que se empilham
+     EXPERIÊNCIAS: lista com foto que segue o cursor
      ========================================================= */
-  const panels = $$('[data-panel]');
-  panels.forEach((p) => { const s = document.createElement('div'); s.className = 'panel__shade'; p.appendChild(s); });
-  if (!reduce) {
-    panels.forEach((p, i) => {
-      const img = p.querySelector('.panel__img');
-      gsap.fromTo(img, { yPercent: -6 }, { yPercent: 6, ease: 'none', scrollTrigger: { trigger: p, start: 'top bottom', end: 'bottom top', scrub: true } });
-      gsap.from(p.querySelectorAll('h3, p, ul, .btn'), { y: 50, opacity: 0, duration: 1.1, stagger: 0.08, scrollTrigger: { trigger: p, start: 'top 70%' } });
-      const next = panels[i + 1];
-      if (!next) return;
-      gsap.timeline({ scrollTrigger: { trigger: next, start: 'top bottom', end: 'top 20%', scrub: true } })
-        .to(p, { scale: 0.9, ease: 'none' }, 0)
-        .to(p.querySelector('.panel__shade'), { opacity: 0.65, ease: 'none' }, 0);
-    });
-  }
-
-  /* =========================================================
-     FORMATOS DE SHOW: mapa de palco interativo
-     ========================================================= */
-  (function formatos() {
-    const POS = {
-      'Maria Laís': [50, 74, true], 'Violão': [30, 68], 'Sanfona': [70, 68], 'Baixo': [20, 52], 'Bateria': [50, 48], 'Percussão': [80, 52],
-      'Técnico de PA': [12, 16], 'Técnico de som': [12, 16], 'Técnico de luz': [31, 16], 'Produtor': [50, 16], 'Técnico de palco': [69, 16], 'Roadie': [88, 16]
-    };
-    const F = {
-      carro: ['Maria Laís', 'Violão', 'Sanfona', 'Baixo'],
-      reduzido: ['Maria Laís', 'Violão', 'Sanfona', 'Bateria', 'Baixo', 'Técnico de som', 'Roadie', 'Produtor'],
-      van: ['Maria Laís', 'Violão', 'Baixo', 'Percussão', 'Bateria', 'Sanfona', 'Técnico de PA', 'Técnico de palco', 'Roadie', 'Técnico de luz', 'Produtor'],
-      aereo: ['Maria Laís', 'Violão', 'Baixo', 'Percussão', 'Bateria', 'Sanfona', 'Técnico de PA', 'Técnico de palco', 'Roadie', 'Técnico de luz', 'Produtor']
-    };
-    const slotsEl = $('[data-slots]');
-    const slots = {};
-    Object.entries(POS).forEach(([name, [x, y, star]]) => {
-      if (name === 'Técnico de som') return;
-      const d = document.createElement('div');
-      d.className = 'slot' + (star ? ' is-star' : '');
-      d.style.left = `${x}%`; d.style.top = `${y}%`;
-      d.innerHTML = `<i></i><span>${name}</span>`;
-      slotsEl.appendChild(d);
-      slots[name] = d;
-    });
-    const countEl = $('[data-formato-count]');
-    const listEl = $('[data-formato-list]');
-    const tabs = $$('[data-formato]');
-    let count = { v: 11 };
-    function show(key, animate = true) {
-      const roles = F[key];
-      tabs.forEach((t) => t.setAttribute('aria-selected', String(t.dataset.formato === key)));
-      const on = new Set(roles.map((r) => (r === 'Técnico de som' ? 'Técnico de PA' : r)));
-      slots['Técnico de PA'].querySelector('span').textContent = roles.includes('Técnico de som') ? 'Técnico de som' : 'Técnico de PA';
-      Object.entries(slots).forEach(([name, el], i) => {
-        const vis = on.has(name);
-        gsap.to(el, { scale: vis ? 1 : 0.3, opacity: vis ? 1 : 0.08, duration: animate && !reduce ? 0.7 : 0, delay: animate && !reduce ? i * 0.03 : 0, ease: vis ? 'back.out(2)' : 'power2.in' });
+  (function experiencias() {
+    const list = $('[data-exp]');
+    const float = $('[data-exp-float]');
+    const fimg = $('[data-exp-float-img]');
+    if (fine && !reduce) {
+      const fx = gsap.quickTo(float, 'x', { duration: 0.7, ease: 'power3' });
+      const fy = gsap.quickTo(float, 'y', { duration: 0.7, ease: 'power3' });
+      const rot = gsap.quickTo(float, 'rotation', { duration: 0.9, ease: 'power3' });
+      let lastX = 0;
+      gsap.set(float, { x: -9999, y: -9999 });
+      let placed = false;
+      list.addEventListener('pointermove', (e) => {
+        const tx = e.clientX - float.offsetWidth * 0.5, ty = e.clientY - float.offsetHeight * 0.55;
+        if (!placed) { gsap.set(float, { x: tx, y: ty }); placed = true; }
+        fx(tx); fy(ty);
+        rot(clamp((e.clientX - lastX) * 0.6, -8, 8)); lastX = e.clientX;
+        const row = e.target.closest('.exp__row');
+        if (row) { if (!fimg.src.endsWith(row.dataset.img)) fimg.src = row.dataset.img; float.classList.add('is-on'); }
+        else float.classList.remove('is-on');
       });
-      gsap.to(count, { v: roles.length, duration: animate && !reduce ? 0.9 : 0, ease: 'power3.out', onUpdate: () => (countEl.textContent = String(Math.round(count.v)).padStart(2, '0')) });
-      listEl.innerHTML = roles.map((r) => `<li>${r}</li>`).join('');
-      if (animate && !reduce) gsap.from(listEl.children, { y: 12, opacity: 0, duration: 0.5, stagger: 0.025 });
+      list.addEventListener('pointerleave', () => { float.classList.remove('is-on'); rot(0); placed = false; });
     }
-    tabs.forEach((t) => t.addEventListener('click', () => show(t.dataset.formato)));
-    $('[data-formatos-tabs]').addEventListener('keydown', (e) => {
-      const i = tabs.indexOf(document.activeElement);
-      if (i < 0) return;
-      if (e.key === 'ArrowDown' || e.key === 'ArrowRight') { e.preventDefault(); tabs[(i + 1) % tabs.length].focus(); tabs[(i + 1) % tabs.length].click(); }
-      if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') { e.preventDefault(); tabs[(i - 1 + tabs.length) % tabs.length].focus(); tabs[(i - 1 + tabs.length) % tabs.length].click(); }
-    });
-    show('van', false);
     if (!reduce) {
-      gsap.set(Object.values(slots), { scale: 0, opacity: 0 });
-      ScrollTrigger.create({ trigger: '.formatos__stage', start: 'top 75%', once: true, onEnter: () => show('van') });
-      gsap.from('.formatos__tabs button', { x: -40, opacity: 0, duration: 1, stagger: 0.08, scrollTrigger: { trigger: '.formatos__tabs', start: 'top 85%' } });
+      $$('.exp__row', list).forEach((row, k) => {
+        gsap.from(row.querySelector('.exp__name'), { yPercent: 100, opacity: 0, duration: 1.2, ease: 'expo.out', scrollTrigger: { trigger: row, start: 'top 90%' } });
+        gsap.from(row.querySelector('.exp__desc'), { opacity: 0, x: 30, duration: 1.2, ease: 'expo.out', delay: 0.1, scrollTrigger: { trigger: row, start: 'top 90%' } });
+      });
+      gsap.from('.exp__head > *', { y: 40, opacity: 0, duration: 1.2, stagger: 0.1, scrollTrigger: { trigger: '.exp', start: 'top 75%' } });
     }
   })();
 
@@ -796,7 +790,7 @@
         });
       });
       const skew = gsap.quickTo(rows, 'skewX', { duration: 0.5, ease: 'power3' });
-      ScrollTrigger.create({ trigger: '.galeria', start: 'top bottom', end: 'bottom top', onUpdate: (s) => skew(clamp(s.getVelocity() / -300, -8, 8)), onLeave: () => skew(0), onLeaveBack: () => skew(0) });
+      ScrollTrigger.create({ trigger: '.galeria', start: 'top bottom', end: 'bottom top', onUpdate: (s) => skew(clamp(s.getVelocity() / -500, -3, 3)), onLeave: () => skew(0), onLeaveBack: () => skew(0) });
       gsap.from('.galeria__title', { yPercent: 40, opacity: 0, duration: 1.4, scrollTrigger: { trigger: '.galeria', start: 'top 75%' } });
     }
 
@@ -815,19 +809,6 @@
   })();
 
   /* =========================================================
-     CRÉDITOS rolando
-     ========================================================= */
-  if (!reduce) {
-    const roll = $('[data-credits]');
-    const win = $('.creditos__window');
-    gsap.fromTo(roll, { y: () => win.offsetHeight * 0.25 }, {
-      y: () => -(roll.offsetHeight - win.offsetHeight * 0.45), ease: 'none',
-      scrollTrigger: { trigger: '.creditos', start: 'top top', end: 'bottom bottom', scrub: 0.6, invalidateOnRefresh: true }
-    });
-    ScrollTrigger.create({ trigger: '.creditos', start: 'top 60%', once: true, onEnter: () => drawNeon($('.neon--frame')) });
-  }
-
-  /* =========================================================
      SOCIAL: cromo que acompanha o mouse
      ========================================================= */
   const social = $('.social');
@@ -838,7 +819,7 @@
   }
 
   /* =========================================================
-     CTA FINAL
+     CONTRATAÇÃO: pedido em 3 etapas com prévia da mensagem
      ========================================================= */
   const cta = $('[data-cta]');
   if (fine) cta.addEventListener('pointermove', (e) => {
@@ -846,45 +827,80 @@
     cta.style.setProperty('--sx', `${e.clientX - r.left}px`);
     cta.style.setProperty('--sy', `${e.clientY - r.top}px`);
   });
-  const ctaSplit = new SplitText('[data-cta-title]', { type: 'words,chars', wordsClass: 'word', charsClass: 'char', aria: 'auto' });
   if (!reduce) {
-    gsap.set(ctaSplit.chars, { yPercent: 110, rotateX: -70, opacity: 0 });
-    gsap.set('.neon--cta rect', { strokeDasharray: 1, strokeDashoffset: 1 });
+    const ctaSplit = new SplitText('.cta__l', { type: 'words,chars', wordsClass: 'word', charsClass: 'char' });
+    gsap.set(ctaSplit.chars, { yPercent: 110, opacity: 0 });
     ScrollTrigger.create({
-      trigger: cta, start: 'top 55%', once: true,
+      trigger: cta, start: 'top 60%', once: true,
       onEnter: () => {
         gsap.timeline()
-          .to(ctaSplit.chars, { yPercent: 0, rotateX: 0, opacity: 1, duration: 1.3, stagger: 0.03, ease: 'expo.out', transformPerspective: 600 })
-          .add(drawNeon($('.neon--cta')), 0.2)
-          .from('.cta__lead, .cta__form > *', { y: 30, opacity: 0, duration: 1, stagger: 0.08 }, 0.6)
-          .to(ctaSplit.chars, { backgroundPosition: '100% 50%', duration: 2.4, stagger: { each: 0.03, repeat: -1, yoyo: true }, ease: 'sine.inOut' }, 1.4);
+          .to(ctaSplit.chars, { yPercent: 0, opacity: 1, duration: 1.2, stagger: 0.022, ease: 'expo.out' })
+          .from('.cta__lead, .cta__contacts > div', { y: 24, opacity: 0, duration: 1, stagger: 0.06 }, 0.4)
+          .from('.booking', { y: 60, opacity: 0, duration: 1.2, ease: 'expo.out' }, 0.2);
       }
     });
   }
 
-  /* formulário → WhatsApp */
-  $('[data-wa-form]').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const f = new FormData(e.target);
-    const data = f.get('data');
-    const dataBr = data ? data.split('-').reverse().join('/') : 'a combinar';
-    const lines = [
-      'Olá! Vim pelo site e quero contratar a Maria Laís (A Mala).',
-      `Tipo de evento: ${f.get('tipo')}`,
-      `Cidade: ${f.get('cidade') || 'a informar'}`,
-      `Data: ${dataBr}`,
-      f.get('nome') ? `Meu nome: ${f.get('nome')}` : ''
-    ].filter(Boolean);
-    openExternal(waLink(lines.join('\n')));
-  });
-
-  /* feixes de luz azul das artes oficiais: deriva lenta com o scroll */
-  if (!reduce) {
-    $$('.feixe').forEach((f) => {
-      const sec = f.closest('section');
-      gsap.fromTo(f, { yPercent: 18, rotate: -4 }, { yPercent: -18, rotate: 4, ease: 'none', scrollTrigger: { trigger: sec, start: 'top bottom', end: 'bottom top', scrub: 1 } });
+  (function booking() {
+    const form = $('[data-booking]');
+    const panels = $$('[data-step]', form);
+    const bar = $('[data-step-bar]');
+    const num = $('[data-step-num]');
+    const back = $('[data-back]', form), next = $('[data-next]', form), send = $('[data-send]', form);
+    const preview = $('[data-preview]');
+    const out = $('[data-publico-out]');
+    const range = $('#b-publico');
+    let step = 1;
+    const fmtNum = (n) => Number(n).toLocaleString('pt-BR');
+    function message() {
+      const f = new FormData(form);
+      const d = f.get('data');
+      const dataBr = d ? d.split('-').reverse().join('/') : 'a combinar';
+      return [
+        'Olá! Vim pelo site e quero contratar a Maria Laís (A Mala).',
+        `Evento: ${f.get('tipo')}`,
+        `Cidade: ${f.get('cidade') || 'a informar'}`,
+        `Data: ${dataBr}`,
+        `Público estimado: ${fmtNum(f.get('publico'))} pessoas`,
+        f.get('empresa') ? `Empresa ou evento: ${f.get('empresa')}` : '',
+        f.get('obs') ? `Detalhes: ${f.get('obs')}` : '',
+        f.get('nome') ? `Meu nome: ${f.get('nome')}` : ''
+      ].filter(Boolean).join('\n');
+    }
+    const refresh = () => {
+      out.textContent = `${fmtNum(range.value)} pessoas`;
+      range.style.setProperty('--p', `${((range.value - range.min) / (range.max - range.min)) * 100}%`);
+      preview.textContent = message();
+    };
+    function go(n) {
+      const prev = step;
+      step = clamp(n, 1, panels.length);
+      panels.forEach((p) => {
+        const s = +p.dataset.step;
+        p.classList.toggle('is-active', s === step);
+        p.classList.toggle('is-left', s < step);
+        p.toggleAttribute('inert', s !== step);
+      });
+      bar.style.width = `${(step / panels.length) * 100}%`;
+      num.textContent = step;
+      back.disabled = step === 1;
+      next.hidden = step === panels.length;
+      send.hidden = step !== panels.length;
+      if (prev !== step) {
+        const first = panels[step - 1].querySelector('input:checked, input:not([type="radio"]), textarea');
+        setTimeout(() => first && first.focus({ preventScroll: true }), 350);
+      }
+    }
+    form.addEventListener('input', refresh);
+    form.addEventListener('change', refresh);
+    next.addEventListener('click', () => go(step + 1));
+    back.addEventListener('click', () => go(step - 1));
+    form.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && e.target.tagName === 'INPUT' && step < panels.length) { e.preventDefault(); go(step + 1); }
     });
-  }
+    form.addEventListener('submit', (e) => { e.preventDefault(); openExternal(waLink(message())); });
+    refresh(); go(1);
+  })();
 
   /* ---------- atualizações finais ---------- */
   addEventListener('load', () => ScrollTrigger.refresh());

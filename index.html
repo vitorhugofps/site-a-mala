@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Maria Laís (A Mala) — DVD Mais ou Menos Assim, shows e contratação</title>
   <meta name="description" content="Site oficial da cantora Maria Laís, A Mala. Assista ao DVD Mais ou Menos Assim, ouça as faixas e contrate shows, eventos privados e ações para marcas.">
-  <meta name="theme-color" content="#050A24">
+  <meta name="theme-color" content="#000000">
   <link rel="canonical" href="https://marialais.com.br/">
   <link rel="icon" type="image/png" href="assets/img/favicon.png">
   <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
@@ -51,19 +51,24 @@
   }
   </script>
 
-  <link rel="preload" as="font" type="font/woff2" href="assets/fonts/bodoni-moda-latin-opsz-italic.woff2" crossorigin>
-  <link rel="preload" as="font" type="font/woff2" href="assets/fonts/montserrat-latin-wght-normal.woff2" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="assets/fonts/archivo-latin-wdth-normal.woff2" crossorigin>
   <link rel="preload" as="image" href="assets/img/intro-poster.jpg">
   <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body class="is-loading">
-  <a class="skip" href="#manifesto">Pular a abertura</a>
+  <a class="skip" href="#sobre">Pular a abertura</a>
 
-  <!-- Carregamento: o equalizador do logo -->
-  <div class="loader" aria-hidden="true">
-    <div class="loader__eq"><i></i><i></i><i></i><i></i></div>
-    <p class="loader__name">Maria Laís</p>
-    <p class="loader__pct"><span data-pct>0</span>%</p>
+  <!-- Entrada: carrega o vídeo e libera o som com um clique -->
+  <div class="gate" data-gate role="dialog" aria-modal="true" aria-label="Entrar no site da Maria Laís">
+    <div class="gate__inner">
+      <div class="gate__eq" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+      <p class="gate__name">Maria Laís</p>
+      <p class="gate__pct" aria-hidden="true"><span data-pct>0</span>%</p>
+      <div class="gate__actions" data-gate-actions>
+        <button class="btn btn--light btn--xl" type="button" data-enter="sound">Entrar com som</button>
+        <button class="btn btn--ghost btn--xl" type="button" data-enter="mute">Entrar sem som</button>
+      </div>
+    </div>
   </div>
 
   <div class="cursor" aria-hidden="true"><span class="cursor__dot"></span><span class="cursor__label"></span></div>
@@ -73,6 +78,7 @@
   <header class="nav" data-nav>
     <a class="nav__logo" href="#topo" aria-label="Maria Laís, voltar ao início"><img src="assets/img/logo-branco.webp" alt="" width="1420" height="1069"></a>
     <nav class="nav__links" aria-label="Seções">
+      <a href="#sobre">A Mala</a>
       <a href="#dvd">O DVD</a>
       <a href="#faixas">Faixas</a>
       <a href="#experiencias">Shows</a>
@@ -84,11 +90,11 @@
 
   <div class="menu" id="menu" hidden>
     <nav aria-label="Menu">
+      <a href="#sobre">A Mala</a>
       <a href="#dvd">O DVD</a>
       <a href="#faixas">Faixas</a>
       <a href="#setlist">Setlist</a>
       <a href="#experiencias">Shows</a>
-      <a href="#formatos">Formatos</a>
       <a href="#galeria">Galeria</a>
       <a href="#contratar">Contratar</a>
     </nav>
@@ -96,7 +102,7 @@
 
   <main id="topo">
 
-    <!-- 1. ABERTURA: vídeo 4K do DVD que se recolhe para dentro do arco do logo -->
+    <!-- 1. ABERTURA: vídeo 4K que se recolhe para dentro do arco do logo -->
     <section class="abertura" id="abertura" aria-label="Abertura">
       <div class="abertura__stage">
         <div class="abertura__video" data-intro-wrap>
@@ -109,10 +115,10 @@
         <div class="abertura__bars" aria-hidden="true"><span></span><span></span></div>
 
         <div class="abertura__copy" data-intro-copy>
-          <p class="abertura__kicker"><span class="live-dot" aria-hidden="true"></span>Gravado ao vivo em 4K</p>
-          <h1 class="abertura__title" data-split-chars>É mais ou menos assim…</h1>
+          <p class="abertura__kicker"><span class="live-dot" aria-hidden="true"></span>Maria Laís ao vivo, gravado em 4K</p>
+          <h1 class="abertura__title" data-split-chars><span>A voz</span> <span>de uma nova</span> <span>geração</span></h1>
           <div class="abertura__foot">
-            <p>DVD <em>Mais ou Menos Assim</em>, Maria Laís</p>
+            <p>Sertanejo, sofrência e modão de Uberlândia para o Brasil</p>
             <button class="btn btn--ghost" type="button" data-yt="IL7bzaJbU4o" data-yt-title="Mais ou Menos Assim, DVD completo">Assistir ao DVD</button>
           </div>
           <div class="abertura__scroll" aria-hidden="true"><span></span>Role</div>
@@ -127,7 +133,6 @@
           <div class="logo3d__layer logo3d__bar logo3d__bar--3"></div>
           <div class="logo3d__layer logo3d__bar logo3d__bar--4"></div>
           <p class="logo3d__amala" data-logo-amala>(a mala)</p>
-          <canvas class="logo3d__sparks" data-sparks></canvas>
         </div>
 
         <div class="lockup" data-lockup aria-hidden="true">
@@ -139,26 +144,30 @@
       </div>
     </section>
 
-    <!-- 2. MANIFESTO -->
-    <section class="manifesto" id="manifesto" aria-label="Quem é a Mala">
-      <figure class="manifesto__portrait">
-        <video data-lazy-video muted playsinline loop preload="none" poster="assets/img/retrato-poster.jpg" data-src="assets/video/retrato.mp4" aria-hidden="true"></video>
-        <figcaption>Maria Laís no DVD <em>Mais ou Menos Assim</em></figcaption>
-      </figure>
-      <div class="manifesto__text">
-        <p class="manifesto__quote" data-words>A música sempre foi a minha forma mais verdadeira de me expressar. Comecei cantando na igreja aos três anos, cresci entre bateria, violão e canto, e levei o modão para os botecos de Uberlândia até ele encontrar milhões de pessoas.</p>
-        <p class="manifesto__sign"><span class="manifesto__wm" role="img" aria-label="A Mala"></span><span class="manifesto__name">Maria Laís</span></p>
-        <p class="manifesto__body">Meu repertório mistura sertanejo moderno, clássicos da sofrência e modões que atravessam gerações. Mais do que cantar, eu gosto de entregar sentimento: amor, saudade e tudo aquilo que o coração sente.</p>
+    <!-- 2. SOBRE: frases grandes com vídeo dentro do texto -->
+    <section class="sobre" id="sobre" aria-labelledby="sobre-titulo">
+      <h2 id="sobre-titulo" class="sr">Quem é a Mala</h2>
+      <div class="sobre__lines">
+        <p class="line" data-dir="-1"><span class="w">Comecei</span><span class="inmedia inmedia--tall"><video data-lazy-video muted playsinline loop preload="none" poster="assets/img/retrato-poster.jpg" data-src="assets/video/retrato.mp4" aria-hidden="true"></video></span><span class="w">na igreja</span><span class="w w--ghost">aos 3 anos</span></p>
+        <p class="line" data-dir="1"><span class="w w--ghost">Levei</span><span class="w">o modão</span><span class="inmedia"><video data-lazy-video muted playsinline loop preload="none" poster="assets/img/palco-02.jpg" data-src="assets/video/preview-dvd.mp4" aria-hidden="true"></video></span><span class="w">pro boteco</span></p>
+        <p class="line" data-dir="-1"><span class="w">Hoje são</span><span class="w w--chrome">3 milhões</span><span class="inmedia"><video data-lazy-video muted playsinline loop preload="none" poster="assets/img/palco-15.jpg" data-src="assets/video/preview-reinicia.mp4" aria-hidden="true"></video></span><span class="w w--ghost">cantando junto</span></p>
+      </div>
+      <div class="sobre__foot">
+        <p class="sobre__quote">“A música sempre foi a minha forma mais verdadeira de me expressar. Mais do que cantar, eu gosto de entregar sentimento.”</p>
+        <div class="sobre__side">
+          <p class="sobre__body">Maria Laís cresceu entre bateria, violão e canto, fez dupla sertaneja e, em 2023, virou A Mala: cantando modão em botecos de Uberlândia e Araguari até as redes inteiras cantarem junto. O repertório mistura sertanejo moderno, clássicos da sofrência e modões que atravessam gerações.</p>
+          <p class="sobre__sign"><span class="sobre__wm" role="img" aria-label="A Mala"></span><span>Maria Laís</span></p>
+        </div>
       </div>
     </section>
 
     <!-- 3. NÚMEROS -->
     <section class="numeros" aria-label="A Mala em números">
       <ul class="numeros__grid">
-        <li class="num"><svg class="neon" aria-hidden="true"><rect pathLength="1"/></svg><strong><span class="p">+</span><span data-count="3">0</span><span class="u">mi</span></strong><span>seguidores nas redes</span></li>
-        <li class="num"><svg class="neon" aria-hidden="true"><rect pathLength="1"/></svg><strong><span class="p">+</span><span data-count="100">0</span><span class="u">mi</span></strong><span>visualizações</span></li>
-        <li class="num"><svg class="neon" aria-hidden="true"><rect pathLength="1"/></svg><strong><span data-count="10">0</span></strong><span>faixas no DVD, quatro delas inéditas</span></li>
-        <li class="num"><svg class="neon" aria-hidden="true"><rect pathLength="1"/></svg><strong><span data-count="41">0</span><span class="u">min</span></strong><span>de show gravado ao vivo</span></li>
+        <li class="num"><strong><span class="p">+</span><span data-count="3">0</span><span class="u">mi</span></strong><span>seguidores nas redes</span></li>
+        <li class="num"><strong><span class="p">+</span><span data-count="100">0</span><span class="u">mi</span></strong><span>visualizações</span></li>
+        <li class="num"><strong><span data-count="10">0</span></strong><span>faixas no DVD, quatro delas inéditas</span></li>
+        <li class="num"><strong><span data-count="41">0</span><span class="u">min</span></strong><span>de show gravado ao vivo</span></li>
       </ul>
       <div class="marquee" data-marquee aria-hidden="true">
         <div class="marquee__track">
@@ -171,7 +180,6 @@
     <section class="dvd" id="dvd" aria-label="O DVD Mais ou Menos Assim">
       <div class="dvd__pin">
         <h2 class="dvd__title"><span data-dvd-l>O DVD que</span> <span data-dvd-r>você vai sentir</span></h2>
-        <img class="feixe feixe--dvd" src="assets/img/feixes.svg" alt="" aria-hidden="true">
         <div class="dvd__frame" data-dvd-frame>
           <video data-lazy-video muted playsinline loop preload="none" poster="assets/img/dvd-poster.jpg" data-src="assets/video/dvd-destaque.mp4" aria-hidden="true"></video>
           <div class="dvd__overlay" data-dvd-info>
@@ -258,7 +266,6 @@
 
     <!-- 6. SETLIST INTERATIVO -->
     <section class="setlist" id="setlist" aria-labelledby="setlist-titulo">
-      <img class="feixe feixe--setlist" src="assets/img/feixes.svg" alt="" aria-hidden="true" loading="lazy">
       <header class="setlist__head">
         <h2 id="setlist-titulo">O show inteiro, faixa a faixa</h2>
         <p>Cada barra é um trecho dos 41 minutos do DVD. Toque ou passe o mouse para encontrar uma música e assista a partir dela.</p>
@@ -271,82 +278,50 @@
       <ol class="setlist__list" data-setlist></ol>
     </section>
 
-    <!-- 7. EXPERIÊNCIAS -->
+    <!-- 7. EXPERIÊNCIAS: lista com imagem que segue o cursor -->
     <section class="exp" id="experiencias" aria-labelledby="exp-titulo">
       <header class="exp__head">
         <h2 id="exp-titulo">Onde a Mala chega, vira palco</h2>
-        <p>Do boteco ao palco principal: cinco jeitos de levar a Maria Laís para perto do seu público.</p>
+        <p>Do boteco ao palco principal. Escolha um formato e fale direto com a equipe.</p>
       </header>
-      <div class="exp__stack">
-        <article class="panel" data-panel>
-          <img class="panel__img" src="assets/img/palco-23.jpg" alt="" loading="lazy">
-          <div class="panel__inner">
-            <h3>Mala Móvel</h3>
-            <p>Transformo qualquer ambiente em um palco intimista. Chego com a minha mala vintage e o equipamento completo, e a música acontece onde você estiver.</p>
-            <ul><li>Surpresas e homenagens</li><li>Equipamento completo</li><li>Montagem rápida</li></ul>
-            <a class="btn btn--light" data-wa="Quero o projeto Mala Móvel" href="#contratar">Quero a Mala Móvel</a>
-          </div>
-        </article>
-        <article class="panel" data-panel>
-          <img class="panel__img" src="assets/img/palco-02.jpg" alt="" loading="lazy">
-          <div class="panel__inner">
-            <h3>Boteco Delivery</h3>
-            <p>A energia e o clima acolhedor do boteco na sua casa, empresa ou evento. Show intimista, interação real e o modão que todo mundo canta junto.</p>
-            <ul><li>Casa, empresa ou evento</li><li>Repertório de boteco</li><li>Interação com o público</li></ul>
-            <a class="btn btn--light" data-wa="Quero o projeto Boteco Delivery" href="#contratar">Quero o Boteco Delivery</a>
-          </div>
-        </article>
-        <article class="panel" data-panel>
-          <img class="panel__img" src="assets/img/palco-10.jpg" alt="" loading="lazy">
-          <div class="panel__inner">
-            <h3>Shows em bares e casas</h3>
-            <p>Apresentações que criam conexão de verdade com o público, com repertório que vai da sofrência ao sertanejo moderno.</p>
-            <ul><li>Repertório personalizado</li><li>De 2 a 3 horas de show</li><li>Equipamento completo</li></ul>
-            <a class="btn btn--light" data-wa="Quero um show em bar ou casa de show" href="#contratar">Quero um show</a>
-          </div>
-        </article>
-        <article class="panel" data-panel>
-          <img class="panel__img" src="assets/img/palco-13.jpg" alt="" loading="lazy">
-          <div class="panel__inner">
-            <h3>Eventos privados</h3>
-            <p>Aniversários, casamentos, formaturas e confraternizações com uma trilha sonora feita para a sua noite.</p>
-            <ul><li>Repertório sob medida</li><li>Flexibilidade de horário</li><li>Atendimento personalizado</li></ul>
-            <a class="btn btn--light" data-wa="Quero um show para um evento privado" href="#contratar">Quero no meu evento</a>
-          </div>
-        </article>
-        <article class="panel" data-panel>
-          <img class="panel__img" src="assets/img/palco-05.jpg" alt="" loading="lazy">
-          <div class="panel__inner">
-            <h3>Ações para marcas</h3>
-            <p>Experiências musicais para empresas que querem emocionar: conteúdo para redes e a força de uma artista acompanhada por milhões.</p>
-            <ul><li>Conceito personalizado</li><li>Produção completa</li><li>Conteúdo para redes</li></ul>
-            <a class="btn btn--light" data-wa="Quero uma ação para a minha marca" href="#contratar">Quero para a minha marca</a>
-          </div>
-        </article>
-      </div>
-    </section>
-
-    <!-- 8. FORMATOS DE SHOW -->
-    <section class="formatos" id="formatos" aria-labelledby="formatos-titulo">
-      <img class="feixe feixe--formatos" src="assets/img/feixes.svg" alt="" aria-hidden="true" loading="lazy">
-      <div class="formatos__copy">
-        <h2 id="formatos-titulo">Escolha o formato do show</h2>
-        <p>Do voz e violão de carro ao show completo de avião: veja quem sobe ao palco em cada formato.</p>
-        <div class="formatos__tabs" role="tablist" aria-label="Formatos de show" data-formatos-tabs>
-          <button role="tab" aria-selected="false" data-formato="carro">Carro<small>Voz, violão, sanfona e baixo</small></button>
-          <button role="tab" aria-selected="false" data-formato="reduzido">Van ou aéreo<small>Show reduzido</small></button>
-          <button role="tab" aria-selected="true" data-formato="van">Van<small>Show completo</small></button>
-          <button role="tab" aria-selected="false" data-formato="aereo">Aéreo<small>Show completo</small></button>
-        </div>
-      </div>
-      <div class="formatos__stage" data-formatos-stage>
-        <div class="stageplot" aria-hidden="true">
-          <div class="stageplot__floor"></div>
-          <div class="stageplot__slots" data-slots></div>
-        </div>
-        <p class="formatos__count"><strong data-formato-count>11</strong> <span>pessoas na equipe</span></p>
-        <ul class="formatos__list" data-formato-list aria-live="polite"></ul>
-      </div>
+      <ul class="exp__list" data-exp>
+        <li class="exp__row" data-img="assets/img/palco-23.jpg">
+          <a href="#contratar" data-wa="Quero o projeto Mala Móvel" data-cursor="Pedir">
+            <span class="exp__thumb" aria-hidden="true"><img src="assets/img/palco-23.jpg" alt="" loading="lazy"></span>
+            <span class="exp__name">Mala Móvel</span>
+            <span class="exp__desc">Palco intimista onde você estiver: chego com a mala vintage e o equipamento completo.</span>
+          </a>
+        </li>
+        <li class="exp__row" data-img="assets/img/palco-02.jpg">
+          <a href="#contratar" data-wa="Quero o projeto Boteco Delivery" data-cursor="Pedir">
+            <span class="exp__thumb" aria-hidden="true"><img src="assets/img/palco-02.jpg" alt="" loading="lazy"></span>
+            <span class="exp__name">Boteco Delivery</span>
+            <span class="exp__desc">O clima do boteco na sua casa, empresa ou evento, com o modão que todo mundo canta junto.</span>
+          </a>
+        </li>
+        <li class="exp__row" data-img="assets/img/palco-10.jpg">
+          <a href="#contratar" data-wa="Quero um show em bar ou casa de show" data-cursor="Pedir">
+            <span class="exp__thumb" aria-hidden="true"><img src="assets/img/palco-10.jpg" alt="" loading="lazy"></span>
+            <span class="exp__name">Bares e casas</span>
+            <span class="exp__desc">De 2 a 3 horas de show, da sofrência ao sertanejo moderno, com equipamento completo.</span>
+          </a>
+        </li>
+        <li class="exp__row" data-img="assets/img/palco-13.jpg">
+          <a href="#contratar" data-wa="Quero um show para um evento privado" data-cursor="Pedir">
+            <span class="exp__thumb" aria-hidden="true"><img src="assets/img/palco-13.jpg" alt="" loading="lazy"></span>
+            <span class="exp__name">Eventos privados</span>
+            <span class="exp__desc">Casamentos, aniversários, formaturas e confraternizações com repertório sob medida.</span>
+          </a>
+        </li>
+        <li class="exp__row" data-img="assets/img/palco-05.jpg">
+          <a href="#contratar" data-wa="Quero uma ação para a minha marca" data-cursor="Pedir">
+            <span class="exp__thumb" aria-hidden="true"><img src="assets/img/palco-05.jpg" alt="" loading="lazy"></span>
+            <span class="exp__name">Marcas</span>
+            <span class="exp__desc">Experiências musicais e conteúdo para redes com uma artista acompanhada por milhões.</span>
+          </a>
+        </li>
+      </ul>
+      <div class="exp__float" data-exp-float aria-hidden="true"><img data-exp-float-img src="assets/img/palco-23.jpg" alt=""></div>
     </section>
 
     <!-- 9. GALERIA -->
@@ -358,40 +333,8 @@
       </div>
     </section>
 
-    <!-- 10. CRÉDITOS -->
-    <section class="creditos" aria-labelledby="creditos-titulo">
-      <div class="creditos__pin">
-        <svg class="neon neon--frame" aria-hidden="true"><rect pathLength="1"/></svg>
-        <div class="creditos__window">
-        <div class="creditos__roll" data-credits>
-          <h2 id="creditos-titulo">Mais ou Menos Assim</h2>
-          <dl>
-            <div><dt>Intérprete</dt><dd>Maria Laís (A Mala)</dd></div>
-            <div><dt>Participação especial</dt><dd>Naessa</dd></div>
-            <div><dt>Bateria</dt><dd>Ozeias Afonso</dd></div>
-            <div><dt>Acordeon</dt><dd>Rudnei Martins</dd></div>
-            <div><dt>Violão</dt><dd>Danilo Ramos</dd></div>
-            <div><dt>Violão</dt><dd>João Carrilo</dd></div>
-            <div><dt>Contrabaixo</dt><dd>Paulo Dias</dd></div>
-            <div><dt>Percussão</dt><dd>Weler Andrade</dd></div>
-            <div><dt>Produção executiva</dt><dd>Misael Menezes</dd></div>
-            <div><dt>Direção artística</dt><dd>Gabriel Martins</dd></div>
-            <div><dt>Direção musical</dt><dd>Rudnei Martins</dd></div>
-            <div><dt>Direção de vídeo</dt><dd>Fabio Martins</dd></div>
-            <div><dt>Produção de vídeo</dt><dd>Portrait Filmes</dd></div>
-            <div><dt>Mixagem e masterização</dt><dd>Emílio Borges</dd></div>
-            <div><dt>Selo</dt><dd>P10 Records</dd></div>
-            <div><dt>Agenciamento</dt><dd>GIBSON Promoções</dd></div>
-          </dl>
-          <p class="creditos__end">Obrigada por fazerem parte disso.</p>
-        </div>
-        </div>
-      </div>
-    </section>
-
     <!-- 11. COMUNIDADE -->
     <section class="social" aria-labelledby="social-titulo">
-      <img class="feixe feixe--social" src="assets/img/feixes.svg" alt="" aria-hidden="true" loading="lazy">
       <h2 id="social-titulo" class="social__handle" data-chrome-text>@amalacanta</h2>
       <p class="social__lead">Bastidores, modão e surpresas todos os dias para mais de 3 milhões de pessoas.</p>
       <ul class="social__links">
@@ -403,33 +346,75 @@
       </ul>
     </section>
 
-    <!-- 12. CTA FINAL -->
+    <!-- 12. CONTRATAÇÃO -->
     <section class="cta" id="contratar" aria-labelledby="cta-titulo" data-cta>
       <video class="cta__bg" data-lazy-video muted playsinline loop preload="none" poster="assets/img/cta-poster.jpg" data-src="assets/video/cta-fundo.mp4" aria-hidden="true"></video>
-      <div class="cta__beams" aria-hidden="true"><i></i><i></i><i></i></div>
       <div class="cta__spot" aria-hidden="true"></div>
-      <svg class="neon neon--cta" aria-hidden="true"><rect pathLength="1"/></svg>
-
-      <div class="cta__inner">
-        <h2 id="cta-titulo" class="cta__title" data-cta-title>Leve a Mala para o seu palco.</h2>
-        <p class="cta__lead">Shows, eventos privados e ações para marcas. Conte a data e a cidade e a equipe responde pelo WhatsApp.</p>
-
-        <form class="cta__form" data-wa-form novalidate>
-          <fieldset class="chips">
-            <legend>Tipo de evento</legend>
-            <label><input type="radio" name="tipo" value="Show em bar ou casa de show" checked><span>Bar ou casa</span></label>
-            <label><input type="radio" name="tipo" value="Evento privado"><span>Evento privado</span></label>
-            <label><input type="radio" name="tipo" value="Festa ou festival"><span>Festa ou festival</span></label>
-            <label><input type="radio" name="tipo" value="Ação para marca"><span>Marca</span></label>
-          </fieldset>
-          <div class="cta__fields">
-            <label class="field"><span>Seu nome</span><input name="nome" autocomplete="name" placeholder="Como podemos te chamar"></label>
-            <label class="field"><span>Cidade</span><input name="cidade" autocomplete="address-level2" placeholder="Cidade e estado"></label>
-            <label class="field"><span>Data</span><input name="data" type="date"></label>
+      <div class="cta__wrap">
+        <h2 id="cta-titulo" class="cta__title" data-cta-title><span class="cta__l">Leve a Mala</span> <span class="cta__l">pro seu <em class="cta__chrome">palco.</em></span></h2>
+        <div class="cta__grid">
+        <form class="booking" data-booking novalidate aria-labelledby="booking-titulo">
+          <div class="booking__head">
+            <p id="booking-titulo" class="booking__title">Pedido de show</p>
+            <p class="booking__count"><span data-step-num>1</span>/3</p>
           </div>
-          <button class="btn btn--xl" type="submit" data-magnetic><span>Enviar pedido pelo WhatsApp</span></button>
-          <p class="cta__alt">Prefere e-mail? <a href="mailto:contato@marialais.com.br">contato@marialais.com.br</a> ou ligue <a href="tel:+5534984009272">(34) 98400-9272</a></p>
+          <div class="booking__bar" aria-hidden="true"><span data-step-bar></span></div>
+
+          <div class="booking__panels">
+            <fieldset class="booking__panel is-active" data-step="1">
+              <legend>Que tipo de evento?</legend>
+              <div class="tiles">
+                <label class="tile"><input type="radio" name="tipo" value="Show em bar ou casa de show" checked><strong>Bar ou casa de show</strong><small>De 2 a 3 horas de repertório</small></label>
+                <label class="tile"><input type="radio" name="tipo" value="Evento privado"><strong>Evento privado</strong><small>Casamento, aniversário, formatura</small></label>
+                <label class="tile"><input type="radio" name="tipo" value="Festa ou festival"><strong>Festa ou festival</strong><small>Palco grande, público aberto</small></label>
+                <label class="tile"><input type="radio" name="tipo" value="Ação para marca"><strong>Ação para marca</strong><small>Experiência e conteúdo</small></label>
+                <label class="tile"><input type="radio" name="tipo" value="Mala Móvel"><strong>Mala Móvel</strong><small>Palco intimista onde você estiver</small></label>
+                <label class="tile"><input type="radio" name="tipo" value="Boteco Delivery"><strong>Boteco Delivery</strong><small>O clima de boteco no seu evento</small></label>
+              </div>
+            </fieldset>
+
+            <fieldset class="booking__panel" data-step="2">
+              <legend>Onde e quando?</legend>
+              <div class="fields fields--2">
+                <label class="field"><span>Cidade</span><input id="b-cidade" name="cidade" autocomplete="address-level2" placeholder="Cidade e estado"></label>
+                <label class="field"><span>Data</span><input id="b-data" name="data" type="date"></label>
+              </div>
+              <label class="field field--range"><span>Público estimado <output data-publico-out>300 pessoas</output></span><input id="b-publico" name="publico" type="range" min="50" max="5000" step="50" value="300"></label>
+            </fieldset>
+
+            <fieldset class="booking__panel" data-step="3">
+              <legend>Como falamos com você?</legend>
+              <div class="fields fields--2">
+                <label class="field"><span>Seu nome</span><input id="b-nome" name="nome" autocomplete="name" placeholder="Nome e sobrenome"></label>
+                <label class="field"><span>Empresa ou evento</span><input id="b-empresa" name="empresa" autocomplete="organization" placeholder="Opcional"></label>
+              </div>
+              <label class="field"><span>Algo mais?</span><textarea id="b-obs" name="obs" rows="2" placeholder="Horário, estrutura, ideias (opcional)"></textarea></label>
+            </fieldset>
+          </div>
+
+          <div class="booking__preview">
+            <p class="booking__plabel">Prévia da mensagem</p>
+            <div class="bubble" data-preview aria-live="polite"></div>
+          </div>
+
+          <div class="booking__nav">
+            <button class="btn btn--ghost" type="button" data-back disabled>Voltar</button>
+            <button class="btn btn--light" type="button" data-next data-magnetic>Continuar</button>
+            <button class="btn btn--light" type="submit" data-send hidden data-magnetic>Enviar pelo WhatsApp</button>
+          </div>
         </form>
+
+        <aside class="cta__side">
+          <p class="cta__lead">Shows, eventos privados e ações para marcas em todo o Brasil. Monte o pedido ao lado ou chame direto.</p>
+          <a class="cta__wa" href="https://wa.me/5534984009272" target="_blank" rel="noopener" data-cursor="Chamar"><small>WhatsApp da equipe</small><strong>(34) 98400-9272</strong></a>
+          <dl class="cta__contacts">
+            <div><dt>E-mail</dt><dd><a href="mailto:contato@marialais.com.br">contato@marialais.com.br</a></dd></div>
+            <div><dt>Instagram</dt><dd><a href="https://www.instagram.com/amalacanta/" target="_blank" rel="noopener">@amalacanta</a></dd></div>
+            <div><dt>Agenciamento</dt><dd>GIBSON Promoções</dd></div>
+            <div><dt>Base</dt><dd>Uberlândia, MG</dd></div>
+          </dl>
+        </aside>
+        </div>
       </div>
     </section>
   </main>
@@ -456,6 +441,24 @@
   <a class="wa-float" href="https://wa.me/5534984009272?text=Ol%C3%A1!%20Vim%20pelo%20site%20e%20quero%20contratar%20a%20Maria%20La%C3%ADs%20(A%20Mala)." target="_blank" rel="noopener" aria-label="Chamar no WhatsApp">
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.3-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.1.6a2.7 2.7 0 0 0 1.8-1.2 2.2 2.2 0 0 0 .2-1.2c-.1-.1-.3-.2-.5-.3Z"/></svg>
   </a>
+
+
+  <!-- Player flutuante da música do DVD -->
+  <div class="dock" data-dock role="region" aria-label="Música tocando">
+    <button class="dock__play" type="button" data-dock-play aria-label="Tocar música">
+      <svg class="dock__ring" viewBox="0 0 44 44" aria-hidden="true"><circle cx="22" cy="22" r="20" pathLength="1"/><circle class="dock__ring-fill" data-dock-ring cx="22" cy="22" r="20" pathLength="1"/></svg>
+      <svg class="dock__icon dock__icon--play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+      <svg class="dock__icon dock__icon--pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>
+    </button>
+    <div class="dock__meta">
+      <p class="dock__title" data-dock-title>Traumatizou</p>
+      <p class="dock__artist">Maria Laís, ao vivo</p>
+    </div>
+    <canvas class="dock__eq" data-dock-eq width="96" height="40" aria-hidden="true"></canvas>
+    <button class="dock__next" type="button" data-dock-next aria-label="Próxima música"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l9 6-9 6zM16 6h2v12h-2z"/></svg></button>
+    <div class="dock__seek" data-dock-seek role="slider" tabindex="0" aria-label="Posição da música" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span data-dock-bar></span></div>
+  </div>
+  <audio data-music preload="none"></audio>
 
   <dialog class="player" data-player aria-label="Player de vídeo">
     <div class="player__box">

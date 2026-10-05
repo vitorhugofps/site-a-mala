@@ -8,6 +8,7 @@ Você é ao mesmo tempo: (a) o empresário da GIBSON Promoções que agencia a M
 ## Briefing que precisa estar atendido
 - Intro com vídeo grande 3840x2160 do DVD, esteticamente bonito.
 - Logo A MALA / Maria Laís em destaque logo após a introdução.
+- Paleta preta, branca e chumbo/prata; tipografia bold moderna; áudio do DVD com player flutuante; sem seção de formatos de show e sem créditos do DVD (o site é sobre A MALA).
 - Ênfase no conteúdo da artista, com foco nos vídeos do DVD com mais visualizações e engajamento.
 - Animações diferentes no scroll, elementos interativos e gráficos.
 - Identidade visual da marca recriada.
