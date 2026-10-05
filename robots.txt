@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://marialais.com.br/sitemap.xml
