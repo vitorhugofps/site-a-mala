@@ -12,7 +12,6 @@
   const isMobile = () => innerWidth <= 860;
   const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
   const root = document.documentElement;
-  const W0 = 620, S0 = '96%'; // peso e largura de repouso dos títulos
 
   gsap.registerPlugin(ScrollTrigger, SplitText);
   gsap.defaults({ ease: 'expo.out' });
@@ -83,7 +82,7 @@
   };
   $$('a[href^="#"]').forEach((a) => a.addEventListener('click', (e) => {
     const id = a.getAttribute('href');
-    if (id.length < 2) return;
+    if (!id || id[0] !== '#' || id.length < 2) return;
     const el = $(id);
     if (!el) return;
     e.preventDefault();
@@ -111,12 +110,12 @@
       cur.classList.toggle('is-link', !lab && !!link);
     });
     $$('[data-magnetic]').forEach((el) => {
-      const mx = gsap.quickTo(el, 'x', { duration: 0.6, ease: 'elastic.out(1, .4)' });
-      const my = gsap.quickTo(el, 'y', { duration: 0.6, ease: 'elastic.out(1, .4)' });
+      const mx = gsap.quickTo(el, 'x', { duration: 0.6, ease: 'power3' });
+      const my = gsap.quickTo(el, 'y', { duration: 0.6, ease: 'power3' });
       el.addEventListener('pointermove', (e) => {
         const r = el.getBoundingClientRect();
-        mx((e.clientX - r.left - r.width / 2) * 0.3);
-        my((e.clientY - r.top - r.height / 2) * 0.4);
+        mx((e.clientX - r.left - r.width / 2) * 0.15);
+        my((e.clientY - r.top - r.height / 2) * 0.2);
       });
       el.addEventListener('pointerleave', () => { mx(0); my(0); });
     });
@@ -145,13 +144,14 @@
   const menu = $('#menu');
   const menuBtn = $('[data-menu-toggle]');
   let menuOpen = false;
-  const behindMenu = () => ['main', 'footer', '[data-dock]', '.wa-float', '.nav__logo', '.nav__cta'].map((q) => $(q)).filter(Boolean);
-  function closeMenu() { if (!menuOpen) return; menuOpen = false; menu.hidden = true; behindMenu().forEach((el) => (el.inert = false)); menuBtn.setAttribute('aria-expanded', 'false'); lenis && lenis.start(); }
+  const behindMenu = () => ['.skip', 'main', 'footer', '[data-dock]', '.wa-float', '.nav__logo', '.nav__cta'].map((q) => $(q)).filter(Boolean);
+  function closeMenu() { if (!menuOpen) return; menuOpen = false; menu.hidden = true; menuBtn.querySelector('.sr').textContent = 'Abrir menu'; behindMenu().forEach((el) => (el.inert = false)); menuBtn.setAttribute('aria-expanded', 'false'); lenis && lenis.start(); }
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && menuOpen) { closeMenu(); menuBtn.focus(); } });
   menuBtn.addEventListener('click', () => {
     menuOpen = !menuOpen;
     menu.hidden = !menuOpen;
     menuBtn.setAttribute('aria-expanded', String(menuOpen));
+    menuBtn.querySelector('.sr').textContent = menuOpen ? 'Fechar menu' : 'Abrir menu';
     behindMenu().forEach((el) => (el.inert = menuOpen));
     if (menuOpen) { lenis && lenis.stop(); gsap.from('.menu a', { yPercent: 60, opacity: 0, duration: 0.8, stagger: 0.05 }); setTimeout(() => $('.menu a').focus(), 50); }
     else lenis && lenis.start();
@@ -295,7 +295,7 @@
       const draw = () => {
         const lv = levels(N);
         ctx2d.clearRect(0, 0, W, H);
-        ctx2d.fillStyle = root.style.getPropertyValue('--accent').trim() || '#1fe5ff';
+        ctx2d.fillStyle = '#ffc531';
         const bw = W / N;
         for (let i = 0; i < N; i++) {
           const h = Math.max(2, (analyser ? lv[i] : 0.15 + 0.1 * Math.sin(performance.now() / 300 + i)) * H);
@@ -313,7 +313,7 @@
   })();
 
   // no celular, o player se recolhe quando o formulário de contratação está na tela
-  new IntersectionObserver(([e]) => { const t = e.isIntersecting && innerWidth <= 860; $('[data-dock]').classList.toggle('is-tucked', t); $('.wa-float').classList.toggle('is-hidden-cta', t); }, { threshold: 0.05 }).observe($('[data-booking]'));
+  new IntersectionObserver(([e]) => { const t = e.isIntersecting; $('[data-dock]').classList.toggle('is-tucked', t); $('.wa-float').classList.toggle('is-hidden-cta', t); }, { threshold: 0.05 }).observe($('[data-booking]'));
 
   /* botões de projeto abrem o WhatsApp com a mensagem certa */
   $$('[data-wa]').forEach((a) => {
@@ -348,7 +348,7 @@
   autoEvents.forEach((t) => addEventListener(t, autoStart, true));
   setTimeout(() => $('[data-dock]').classList.add('is-visible'), reduce ? 0 : 1600);
 
-  /* pulso da música (0..1) em --beat, para brilhos e o logo pulsarem no ritmo */
+  /* pulso da música (0..1) em --beat: o logo da abertura respira no ritmo */
   let beat = 0;
   gsap.ticker.add(() => {
     let target = 0;
@@ -356,60 +356,23 @@
     beat += (target - beat) * (target > beat ? 0.45 : 0.12);
     if (beat < 0.002) beat = 0;
     root.style.setProperty('--beat', beat.toFixed(3));
-    if (heroBeat && heroBeat.on()) gsap.set(heroBeat.chars, { fontWeight: W0 + beat * 200 });
-  });
-  let heroBeat = null; // preenchido pela abertura: o título engorda no ritmo da música
-
-  /* =========================================================
-     COR DE PALCO: cada seção acende uma luz (ciano e rosa)
-     ========================================================= */
-  const ACCENT = { ciano: '#1fe5ff', rosa: '#ff4fb8' };
-  let accentNow = ACCENT.ciano;
-  const themeMeta = $('meta[name="theme-color"]');
-  function setAccent(name) {
-    const c = ACCENT[name] || ACCENT.ciano;
-    if (c === accentNow) return;
-    accentNow = c;
-    gsap.to(root, { '--accent': c, duration: reduce ? 0 : 0.9, ease: 'power2.out', overwrite: true });
-    themeMeta && themeMeta.setAttribute('content', '#060608');
-  }
-  $$('[data-accent]').forEach((sec) => {
-    ScrollTrigger.create({ trigger: sec, start: 'top 55%', end: 'bottom 55%', onToggle: (s) => s.isActive && setAccent(sec.dataset.accent) });
   });
 
   /* =========================================================
-     TÍTULOS QUE DANÇAM: peso e largura da fonte variável animados
+     TÍTULOS: as linhas sobem por trás de uma máscara
      ========================================================= */
-  const playSplits = new Map();
+  const splits = new Map();
   $$('[data-play-type]').forEach((h) => {
     if (reduce) return;
-    const sp = new SplitText(h, { type: 'words,chars', wordsClass: 'word', charsClass: 'char', aria: 'auto' });
-    playSplits.set(h, sp);
+    const sp = new SplitText(h, { type: 'lines,words', linesClass: 'tl', wordsClass: 'tw', mask: 'lines', aria: 'auto' });
+    splits.set(h, sp);
     if (h.classList.contains('hero__title')) return; // a abertura cuida do próprio título
-    gsap.set(sp.chars, { opacity: 0, yPercent: 70, fontWeight: 200, fontStretch: '75%', rotate: () => gsap.utils.random(-14, 14) });
+    gsap.set(sp.words, { yPercent: 110 });
     ScrollTrigger.create({
-      trigger: h, start: 'top 85%', once: true,
-      onEnter: () => gsap.to(sp.chars, { opacity: 1, yPercent: 0, rotate: 0, fontWeight: W0, fontStretch: S0, duration: 1.1, ease: 'back.out(2.2)', stagger: { each: 0.028, from: 'random' }, clearProps: 'fontWeight,fontStretch,rotate' })
+      trigger: h, start: 'top 86%', once: true,
+      onEnter: () => gsap.to(sp.words, { yPercent: 0, duration: 1.3, ease: 'expo.out', stagger: 0.06 })
     });
   });
-  // perto do cursor as letras engordam e esticam, como se respirassem
-  if (fine && !reduce) {
-    playSplits.forEach((sp, h) => {
-      const chars = sp.chars;
-      let raf = 0, px = 0, py = 0;
-      const apply = () => {
-        raf = 0;
-        chars.forEach((c) => {
-          const r = c.getBoundingClientRect();
-          const d = Math.hypot(px - (r.left + r.width / 2), py - (r.top + r.height / 2));
-          const k = clamp(1 - d / 260, 0, 1);
-          gsap.to(c, { fontWeight: W0 + k * 180, fontStretch: `${96 + k * 4}%`, yPercent: -k * 8, duration: 0.5, ease: 'power3.out', overwrite: 'auto' });
-        });
-      };
-      h.addEventListener('pointermove', (e) => { px = e.clientX; py = e.clientY; if (!raf) raf = requestAnimationFrame(apply); });
-      h.addEventListener('pointerleave', () => gsap.to(chars, { fontWeight: W0, fontStretch: S0, yPercent: 0, duration: 0.8, ease: 'elastic.out(1, .5)', overwrite: 'auto' }));
-    });
-  }
 
   /* =========================================================
      ABERTURA: o vídeo do DVD aparece por dentro do logo (violão);
@@ -439,7 +402,7 @@
     heroHalo.classList.toggle('is-zoom', hs.z > 0.06);
     if (open) return;
     const g = heroGeo();
-    const pulse = 1 + beat * 0.035 * (1 - hs.z);
+    const pulse = 1 + beat * 0.02 * (1 - hs.z);
     const s = Math.pow(60, hs.z) * pulse;
     const L = g.L * s;
     const fx0 = g.x0 + FX * g.L + ptr.x, fy0 = g.y0 + FY * g.L * LA + ptr.y;
@@ -462,15 +425,13 @@
 
   const heroTitle = $('.hero__title');
   const navLogo = $('.nav__logo');
-  if (!reduce) { heroCopy.inert = true; navLogo.classList.add('is-hidden'); }
-  const heroSplit = playSplits.get(heroTitle);
-  let heroDone = !!reduce;
-  if (heroSplit) heroBeat = { chars: heroSplit.chars, on: () => heroVisible && heroDone && (music.playing || beat > 0) };
+  if (!reduce) { heroCopy.inert = true; navLogo.classList.add('is-hidden'); navLogo.inert = true; }
+  const heroSplit = splits.get(heroTitle);
   if (!reduce) {
     // entrada: o logo acende como luz de palco
     gsap.from(heroHalo, { opacity: 0, scale: 0.9, duration: 2, ease: 'expo.out', delay: 0.15 });
-    gsap.from('[data-hero-cue], [data-badge]', { opacity: 0, y: 20, duration: 1.2, delay: 0.9, stagger: 0.15 });
-    if (heroSplit) gsap.set(heroSplit.chars, { opacity: 0, yPercent: 80, fontWeight: 200, fontStretch: '75%', rotate: () => gsap.utils.random(-18, 18) });
+    gsap.from('[data-hero-cue]', { opacity: 0, y: 20, duration: 1.2, delay: 0.9 });
+    if (heroSplit) gsap.set(heroSplit.words, { yPercent: 110 });
 
     const tl = gsap.timeline({
       defaults: { ease: 'none' },
@@ -479,40 +440,28 @@
         onUpdate: (self) => {
           const on = self.progress > 0.62;
           if (on !== heroCopy.classList.contains('is-on')) { heroCopy.classList.toggle('is-on', on); heroCopy.inert = !on; }
-          navLogo.classList.toggle('is-hidden', self.progress < 0.5);
-          heroDone = self.progress > 0.84;
+          navLogo.classList.toggle('is-hidden', self.progress < 0.5); navLogo.inert = self.progress < 0.5;
         }
       }
     });
     tl.to(hs, { z: 1, duration: 0.55, ease: 'power2.in' }, 0)
       .to(hs, { a: 1, duration: 0.12, ease: 'power1.in' }, 0.44)
       .to('[data-hero-cue]', { opacity: 0, y: 30, duration: 0.08 }, 0)
-      .to('[data-badge]', { opacity: 0, scale: 0.6, duration: 0.1 }, 0.2)
       .fromTo('.hero__video', { scale: 1.04, filter: 'brightness(1.4) saturate(1.3)' }, { scale: 1.18, filter: 'brightness(1.05) saturate(1.1)', duration: 0.6, ease: 'power1.inOut' }, 0)
       .to('.hero__shade', { opacity: 1, duration: 0.18 }, 0.52)
       .to(heroCopy, { opacity: 1, duration: 0.08 }, 0.6)
       .from('.hero__kicker', { y: 30, opacity: 0, duration: 0.1, ease: 'power2.out' }, 0.6);
-    if (heroSplit) tl.to(heroSplit.chars, { opacity: 1, yPercent: 0, rotate: 0, fontWeight: W0, fontStretch: S0, duration: 0.16, ease: 'back.out(2)', stagger: { each: 0.006, from: 'start' } }, 0.62);
+    if (heroSplit) tl.to(heroSplit.words, { yPercent: 0, duration: 0.14, ease: 'power3.out', stagger: 0.012 }, 0.62);
     tl.from('.hero__foot', { y: 40, opacity: 0, duration: 0.12, ease: 'power2.out' }, 0.74)
-      .to('[data-badge]', { opacity: 1, scale: 1, duration: 0.1 }, 0.8)
       .to({}, { duration: 0.12 });
   } else {
     heroCopy.classList.add('is-on');
   }
 
-  /* selo giratório: gira sozinho e acelera com o scroll */
-  const badgeText = $('[data-badge] text');
   let scrollVel = 0;
-  ScrollTrigger.create({ start: 0, end: 'max', onUpdate: (s) => { scrollVel = s.getVelocity(); } });
-  if (!reduce && badgeText) {
-    let rot = 0;
-    gsap.ticker.add((t, dt) => {
-      rot += (0.012 + Math.abs(scrollVel) * 0.00004 + beat * 0.05) * dt;
-      badgeText.setAttribute('transform', `rotate(${rot % 360} 100 100)`);
-    });
-  }
+  ScrollTrigger.create({ start: 0, end: 'max', onUpdate: (st) => { scrollVel = st.getVelocity(); } });
 
-  /* faixas cruzadas (letreiros) que correm com o scroll e com a música */
+  /* letreiro com os nomes das músicas: corre devagar e acelera com o scroll */
   $$('[data-band]').forEach((track) => {
     track.innerHTML += track.innerHTML;
     if (reduce) return;
@@ -521,7 +470,7 @@
     addEventListener('resize', () => (half = track.scrollWidth / 2));
     gsap.ticker.add((t, dt) => {
       const flip = scrollVel < -40 ? -1 : 1;
-      const speed = (1.1 + Math.min(16, Math.abs(scrollVel) / 200) + beat * 3) * dir * flip;
+      const speed = (0.7 + Math.min(8, Math.abs(scrollVel) / 300)) * dir * flip;
       x += speed * (dt / 16.67);
       if (x <= -half) x += half;
       if (x > 0) x -= half;
@@ -574,7 +523,7 @@
     const small = () => innerWidth <= 860;
     $('[data-dvd-info]').inert = true;
     const dtl = gsap.timeline({ defaults: { ease: 'none' }, scrollTrigger: { trigger: '.dvd', start: 'top top', end: 'bottom bottom', scrub: 0.8 } });
-    dtl.fromTo('[data-dvd-frame]', { clipPath: () => (small() ? 'inset(26% 8% 26% 8% round 20px)' : 'inset(30% 36% 30% 36% round 24px)') }, { clipPath: 'inset(0% 0% 0% 0% round 0px)', duration: 0.55, ease: 'power2.inOut' }, 0)
+    dtl.fromTo('[data-dvd-frame]', { clipPath: () => (small() ? 'inset(8% 8% 46% 8% round 10px)' : 'inset(10% 38% 46% 34% round 10px)') }, { clipPath: 'inset(0% 0% 0% 0% round 0px)', duration: 0.55, ease: 'power2.inOut' }, 0)
       .fromTo('[data-dvd-l]', { xPercent: 0 }, { xPercent: -70, opacity: 0, duration: 0.5, ease: 'power2.in' }, 0.05)
       .fromTo('[data-dvd-r]', { xPercent: 0 }, { xPercent: 70, opacity: 0, duration: 0.5, ease: 'power2.in' }, 0.05)
       .fromTo('[data-dvd-frame] video', { scale: 1.3 }, { scale: 1, duration: 0.6 }, 0)
@@ -598,9 +547,9 @@
       const media = card.querySelector('.card__media');
       if (!media) return;
       gsap.fromTo(media, { xPercent: -6 }, { xPercent: 6, ease: 'none', scrollTrigger: { trigger: card, containerAnimation: tween, start: 'left right', end: 'right left', scrub: true } });
-      gsap.from(card, { y: 80, rotate: 2, opacity: 0, duration: 1.2, scrollTrigger: { trigger: card, containerAnimation: tween, start: 'left 95%' } });
+      gsap.from(card, { y: 50, opacity: 0, duration: 1.2, scrollTrigger: { trigger: card, containerAnimation: tween, start: 'left 95%' } });
     });
-    gsap.from('.faixas__head > *', { y: 40, opacity: 0, duration: 1.2, stagger: 0.1, scrollTrigger: { trigger: '.faixas', start: 'top 70%' } });
+    gsap.from('.faixas__head > p', { y: 24, opacity: 0, duration: 1.2, scrollTrigger: { trigger: '.faixas', start: 'top 70%' } });
     return () => {};
   });
 
@@ -624,11 +573,7 @@
     const stop = () => { if (!v) return; v.pause(); card.classList.remove('is-playing'); };
     if (fine) {
       card.addEventListener('pointerenter', play);
-      card.addEventListener('pointerleave', () => { stop(); gsap.to(card, { rotationY: 0, rotationX: 0, duration: 0.8, ease: 'power3' }); });
-      if (!reduce) card.addEventListener('pointermove', (e) => {
-        const r = card.getBoundingClientRect();
-        gsap.to(card, { rotationY: ((e.clientX - r.left) / r.width - 0.5) * 8, rotationX: -((e.clientY - r.top) / r.height - 0.5) * 6, transformPerspective: 900, duration: 0.6, ease: 'power3' });
-      });
+      card.addEventListener('pointerleave', stop);
     } else if (v) {
       new IntersectionObserver(([e]) => (e.intersectionRatio > 0.7 ? play() : stop()), { threshold: [0, 0.7] }).observe(card);
     }
@@ -733,7 +678,7 @@
         trigger: wave, start: 'top 80%', once: true,
         onEnter: () => {
           const rects = $$('rect:not(.seg-hit)', svg);
-          gsap.fromTo(rects, { scaleY: 0, transformOrigin: '50% 50%', transformBox: 'fill-box' }, { scaleY: 1, duration: 1.2, ease: 'elastic.out(1, .6)', stagger: { each: 0.004, from: 'start' } });
+          gsap.fromTo(rects, { scaleY: 0, transformOrigin: '50% 50%', transformBox: 'fill-box' }, { scaleY: 1, duration: 1.1, ease: 'expo.out', stagger: { each: 0.003, from: 'start' } });
         }
       });
       gsap.from('.setlist__list li', { y: 30, opacity: 0, duration: 1, stagger: 0.05, scrollTrigger: { trigger: list, start: 'top 85%' } });
@@ -750,40 +695,37 @@
     if (fine && !reduce) {
       const fx = gsap.quickTo(float, 'x', { duration: 0.7, ease: 'power3' });
       const fy = gsap.quickTo(float, 'y', { duration: 0.7, ease: 'power3' });
-      const rot = gsap.quickTo(float, 'rotation', { duration: 0.9, ease: 'power3' });
-      let lastX = 0;
       gsap.set(float, { x: -9999, y: -9999 });
       let placed = false;
       list.addEventListener('pointermove', (e) => {
         const tx = e.clientX - float.offsetWidth * 0.5, ty = e.clientY - float.offsetHeight * 0.55;
         if (!placed) { gsap.set(float, { x: tx, y: ty }); placed = true; }
         fx(tx); fy(ty);
-        rot(clamp((e.clientX - lastX) * 0.6, -8, 8)); lastX = e.clientX;
         const row = e.target.closest('.exp__row');
         if (row) { if (!fimg.src.endsWith(row.dataset.img)) fimg.src = row.dataset.img; float.classList.add('is-on'); }
         else float.classList.remove('is-on');
       });
-      list.addEventListener('pointerleave', () => { float.classList.remove('is-on'); rot(0); placed = false; });
+      list.addEventListener('pointerleave', () => { float.classList.remove('is-on'); placed = false; });
     }
     if (!reduce) {
       $$('.exp__row', list).forEach((row, k) => {
         gsap.from(row.querySelector('.exp__name'), { yPercent: 100, opacity: 0, duration: 1.2, ease: 'expo.out', scrollTrigger: { trigger: row, start: 'top 90%' } });
-        gsap.from(row.querySelector('.exp__desc'), { opacity: 0, x: 30, duration: 1.2, ease: 'expo.out', delay: 0.1, scrollTrigger: { trigger: row, start: 'top 90%' } });
+        gsap.from(row.querySelector('.exp__desc'), { opacity: 0, y: 16, duration: 1.2, ease: 'expo.out', delay: 0.1, scrollTrigger: { trigger: row, start: 'top 90%' } });
       });
-      gsap.from('.exp__head > *', { y: 40, opacity: 0, duration: 1.2, stagger: 0.1, scrollTrigger: { trigger: '.exp', start: 'top 75%' } });
+      gsap.from('.exp__head > p', { y: 24, opacity: 0, duration: 1.2, scrollTrigger: { trigger: '.exp', start: 'top 75%' } });
     }
   })();
 
   /* =========================================================
-     GALERIA: rolo de filme com inclinação pela velocidade
+     GALERIA: duas faixas de fotos do DVD que correm em sentidos opostos
      ========================================================= */
   (function gallery() {
-    const photos = ['23', '01', '03', '09', '13', '18', '02', '14', '06', '20', '08', '16', '21', '04', '10', '19', '22', '05', '15', '24', '07', '17'];
+    const photos = ['01', '02', '03', '04', '05', '06', '07', '08', '10', '13', '15', '16'];
     const alts = 'Maria Laís no palco do DVD Mais ou Menos Assim';
     const rows = $$('.galeria__row');
     const half = Math.ceil(photos.length / 2);
     [photos.slice(0, half), photos.slice(half)].forEach((set, r) => {
-      rows[r].innerHTML = set.map((p) => `<button class="shot" type="button" data-shot="assets/img/palco-${p}.jpg" data-cursor="Ver"><img src="assets/img/palco-${p}.jpg" alt="${alts}" loading="lazy"></button>`).join('');
+      rows[r].innerHTML = set.map((p) => `<button class="shot" type="button" data-shot="assets/img/palco-${p}.webp" data-cursor="Ver"><img src="assets/img/palco-${p}.webp" alt="${alts}" width="1800" height="1012" loading="lazy"></button>`).join('');
     });
     if (!reduce) {
       rows.forEach((row) => {
@@ -793,9 +735,7 @@
           scrollTrigger: { trigger: '.galeria', start: 'top bottom', end: 'bottom top', scrub: 0.6, invalidateOnRefresh: true }
         });
       });
-      const skew = gsap.quickTo(rows, 'skewX', { duration: 0.5, ease: 'power3' });
-      ScrollTrigger.create({ trigger: '.galeria', start: 'top bottom', end: 'bottom top', onUpdate: (s) => skew(clamp(s.getVelocity() / -500, -3, 3)), onLeave: () => skew(0), onLeaveBack: () => skew(0) });
-      gsap.from('.galeria__title', { yPercent: 40, opacity: 0, duration: 1.4, scrollTrigger: { trigger: '.galeria', start: 'top 75%' } });
+      gsap.from('.galeria__head > p', { y: 24, opacity: 0, duration: 1.2, scrollTrigger: { trigger: '.galeria', start: 'top 75%' } });
     }
 
     const lb = $('[data-lightbox]');
@@ -813,12 +753,10 @@
   })();
 
   /* =========================================================
-     SOCIAL: cromo que acompanha o mouse
+     SOCIAL
      ========================================================= */
-  const social = $('.social');
-  if (fine) social.addEventListener('pointermove', (e) => social.style.setProperty('--mx', `${(e.clientX / innerWidth) * 100}%`));
   if (!reduce) {
-    gsap.fromTo('.social__handle', { yPercent: 30, rotate: -3 }, { yPercent: 0, rotate: 0, ease: 'none', scrollTrigger: { trigger: '.social', start: 'top bottom', end: 'center center', scrub: 1 } });
+    gsap.fromTo('.social__handle', { yPercent: 25, opacity: 0.2 }, { yPercent: 0, opacity: 1, ease: 'none', scrollTrigger: { trigger: '.social', start: 'top bottom', end: 'center center', scrub: 1 } });
     gsap.from('.social__links li', { y: 40, opacity: 0, duration: 1, stagger: 0.07, scrollTrigger: { trigger: '.social__links', start: 'top 90%' } });
   }
 
@@ -832,14 +770,14 @@
     cta.style.setProperty('--sy', `${e.clientY - r.top}px`);
   });
   if (!reduce) {
-    const ctaSplit = new SplitText('.cta__l', { type: 'words,chars', wordsClass: 'word', charsClass: 'char' });
-    gsap.set(ctaSplit.chars, { yPercent: 90, opacity: 0, fontWeight: 200, fontStretch: '75%', rotate: () => gsap.utils.random(-16, 16) });
+    const ctaSplit = new SplitText('.cta__l', { type: 'lines,words', linesClass: 'tl', wordsClass: 'tw', mask: 'lines' });
+    gsap.set(ctaSplit.words, { yPercent: 110 });
     ScrollTrigger.create({
       trigger: cta, start: 'top 60%', once: true,
       onEnter: () => {
         gsap.timeline()
-          .to(ctaSplit.chars, { yPercent: 0, opacity: 1, rotate: 0, fontWeight: W0, fontStretch: S0, duration: 1.2, stagger: 0.03, ease: 'back.out(2)', clearProps: 'fontWeight,fontStretch,rotate' })
-          .from('.cta__lead, .cta__contacts > div', { y: 24, opacity: 0, duration: 1, stagger: 0.06 }, 0.4)
+          .to(ctaSplit.words, { yPercent: 0, duration: 1.3, stagger: 0.07, ease: 'expo.out' })
+          .from('.cta__lead, .cta__wa, .cta__contacts > div', { y: 24, opacity: 0, duration: 1, stagger: 0.06 }, 0.4)
           .from('.booking', { y: 60, opacity: 0, duration: 1.2, ease: 'expo.out' }, 0.2);
       }
     });

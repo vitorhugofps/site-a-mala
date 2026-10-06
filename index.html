@@ -51,9 +51,9 @@
   }
   </script>
 
-  <link rel="preload" as="font" type="font/woff2" href="assets/fonts/bricolage-grotesque-latin-standard-normal.woff2" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="assets/fonts/archivo-latin-wdth-normal.woff2" crossorigin>
   <link rel="preload" as="image" href="assets/img/intro-poster.jpg">
-  <link rel="stylesheet" href="assets/css/style.css?v=4">
+  <link rel="stylesheet" href="assets/css/style.css?v=6">
 </head>
 <body>
   <a class="skip" href="#sobre">Pular a abertura</a>
@@ -90,9 +90,8 @@
   <main id="topo">
 
     <!-- 1. ABERTURA: a logo em violão mostra o vídeo por dentro e se abre no scroll -->
-    <section class="hero" id="abertura" aria-label="Abertura" data-accent="ciano">
+    <section class="hero" id="abertura" aria-label="Abertura">
       <div class="hero__stage">
-        <div class="hero__glow" aria-hidden="true"><span></span><span></span></div>
         <div class="hero__halo" data-hero-halo>
           <div class="hero__mask" data-hero-mask>
             <video class="hero__video" data-intro muted playsinline loop autoplay preload="auto" poster="assets/img/intro-poster.jpg"
@@ -119,27 +118,21 @@
           </div>
         </div>
 
-        <svg class="badge" data-badge viewBox="0 0 200 200" aria-hidden="true">
-          <defs><path id="badge-c" d="M100,100 m-78,0 a78,78 0 1,1 156,0 a78,78 0 1,1 -156,0"/></defs>
-          <text><textPath href="#badge-c">A Mala canta ✺ ao vivo ✺ sofrência e modão ✺ </textPath></text>
-          <g class="badge__eq"><rect x="82" y="86" width="6" height="28" rx="3"/><rect x="92" y="78" width="6" height="44" rx="3"/><rect x="102" y="84" width="6" height="32" rx="3"/><rect x="112" y="90" width="6" height="20" rx="3"/></g>
-        </svg>
       </div>
     </section>
 
-    <!-- faixas inclinadas: transição musical -->
+    <!-- letreiro: transição -->
     <div class="bands" aria-hidden="true">
-      <div class="band band--a"><div class="band__track" data-band="-1"><span>Traumatizou</span><i>✺</i><span>Reinicia</span><i>✺</i><span>Camas Avulsas</span><i>✺</i><span>Deu Bom Demais</span><i>✺</i><span>Evidências</span><i>✺</i><span>Nuvem de Lágrimas</span><i>✺</i><span>Disk Me</span><i>✺</i></div></div>
-      <div class="band band--b"><div class="band__track" data-band="1"><span>A voz de uma nova geração</span><i>✺</i><span>Sertanejo</span><i>✺</i><span>Sofrência</span><i>✺</i><span>Modão</span><i>✺</i><span>Boteco</span><i>✺</i><span>Mais ou menos assim</span><i>✺</i></div></div>
+      <div class="band"><div class="band__track" data-band="-1"><span>Traumatizou</span><i></i><span>Reinicia</span><i></i><span>Camas Avulsas</span><i></i><span>Deu Bom Demais</span><i></i><span>Evidências</span><i></i><span>Nuvem de Lágrimas</span><i></i><span>Disk Me</span><i></i><span>Mais ou Menos Assim</span><i></i></div></div>
     </div>
 
     <!-- 2. SOBRE: frases grandes com vídeo dentro do texto -->
-    <section class="sobre" id="sobre" aria-labelledby="sobre-titulo" data-accent="rosa">
+    <section class="sobre" id="sobre" aria-labelledby="sobre-titulo">
       <h2 id="sobre-titulo" class="sr">Quem é a Mala</h2>
       <div class="sobre__lines">
         <p class="line" data-dir="-1"><span class="w">Comecei</span><span class="inmedia inmedia--tall"><video data-lazy-video muted playsinline loop preload="none" poster="assets/img/retrato-poster.jpg" data-src="assets/video/retrato.mp4" aria-hidden="true"></video></span><span class="w">na igreja</span><span class="w w--ghost">aos 3 anos</span></p>
-        <p class="line" data-dir="1"><span class="w w--ghost">Levei</span><span class="w">o modão</span><span class="inmedia"><video data-lazy-video muted playsinline loop preload="none" poster="assets/img/palco-02.jpg" data-src="assets/video/preview-dvd.mp4" aria-hidden="true"></video></span><span class="w">pro boteco</span></p>
-        <p class="line" data-dir="-1"><span class="w">Hoje são</span><span class="w w--chrome">3 milhões</span><span class="inmedia"><video data-lazy-video muted playsinline loop preload="none" poster="assets/img/palco-15.jpg" data-src="assets/video/preview-reinicia.mp4" aria-hidden="true"></video></span><span class="w w--ghost">cantando junto</span></p>
+        <p class="line" data-dir="1"><span class="w w--ghost">Levei</span><span class="w">o modão</span><span class="inmedia"><video data-lazy-video muted playsinline loop preload="none" poster="assets/img/palco-10.webp" data-src="assets/video/preview-dvd.mp4" aria-hidden="true"></video></span><span class="w">pro boteco</span></p>
+        <p class="line" data-dir="-1"><span class="w">Hoje são</span><span class="w w--chrome">3 milhões</span><span class="inmedia"><video data-lazy-video muted playsinline loop preload="none" poster="assets/img/palco-13.webp" data-src="assets/video/preview-reinicia.mp4" aria-hidden="true"></video></span><span class="w w--ghost">cantando junto</span></p>
       </div>
       <div class="sobre__foot">
         <p class="sobre__quote">“A música sempre foi a minha forma mais verdadeira de me expressar. Mais do que cantar, eu gosto de entregar sentimento.”</p>
@@ -151,7 +144,7 @@
     </section>
 
     <!-- 3. NÚMEROS -->
-    <section class="numeros" aria-label="A Mala em números" data-accent="ciano">
+    <section class="numeros" aria-label="A Mala em números">
       <ul class="numeros__grid">
         <li class="num"><strong><span class="p">+</span><span data-count="3">0</span><span class="u">mi</span></strong><span>seguidores nas redes</span></li>
         <li class="num"><strong><span class="p">+</span><span data-count="100">0</span><span class="u">mi</span></strong><span>visualizações</span></li>
@@ -161,11 +154,11 @@
     </section>
 
     <!-- 4. O DVD -->
-    <section class="dvd" id="dvd" aria-label="O DVD Mais ou Menos Assim" data-accent="rosa">
+    <section class="dvd" id="dvd" aria-label="O DVD Mais ou Menos Assim">
       <div class="dvd__pin">
         <h2 class="dvd__title"><span data-dvd-l>O DVD que</span> <span data-dvd-r><em>você vai sentir</em></span></h2>
         <div class="dvd__frame" data-dvd-frame>
-          <video data-lazy-video muted playsinline loop preload="none" poster="assets/img/dvd-poster.jpg" data-src="assets/video/dvd-destaque.mp4" aria-hidden="true"></video>
+          <video data-lazy-video muted playsinline loop preload="none" poster="assets/img/dvd-poster-v4.jpg" data-src="assets/video/dvd-destaque-v4.mp4" aria-hidden="true"></video>
           <div class="dvd__overlay" data-dvd-info>
             <p class="dvd__album">Mais ou Menos Assim</p>
             <p class="dvd__desc">Um retrato dos meus sentimentos, das minhas fases, dos meus erros, amores, saudades e recomeços. Sofrência, nostalgia, romance, músicas inéditas e grandes clássicos, como uma conversa cantada entre eu e vocês.</p>
@@ -185,56 +178,56 @@
     </section>
 
     <!-- 5. FAIXAS MAIS ASSISTIDAS -->
-    <section class="faixas" id="faixas" aria-labelledby="faixas-titulo" data-accent="ciano">
+    <section class="faixas" id="faixas" aria-labelledby="faixas-titulo">
       <div class="faixas__pin">
-        <header class="faixas__head">
+        <header class="faixas__head sec-head">
           <h2 id="faixas-titulo" data-play-type>As mais <em>assistidas</em></h2>
           <p>Em ordem de visualizações no canal <a href="https://www.youtube.com/@amalacanta" target="_blank" rel="noopener">@amalacanta</a>. Escolha uma faixa e assista aqui mesmo.</p>
         </header>
         <div class="faixas__rail" data-rail>
           <ol class="faixas__track" data-rail-track>
-            <li class="card card--hero" data-yt="JVUZTIIwIx4" data-yt-title="Traumatizou" data-cursor="Assistir" tabindex="0" role="button">
-              <div class="card__media"><img src="assets/img/palco-19.jpg" alt="Maria Laís cantando Traumatizou" loading="lazy"><video muted playsinline loop preload="none" data-src="assets/video/preview-traumatizou.mp4" aria-hidden="true"></video></div>
-              <div class="card__info"><span class="card__rank">1</span><h3>Traumatizou</h3><p><span class="tag">Inédita</span> 3:13 </p></div>
+            <li class="card" data-yt="JVUZTIIwIx4" data-yt-title="Traumatizou" data-cursor="Assistir" tabindex="0" role="button">
+              <div class="card__media"><img src="assets/img/card-traumatizou.webp" alt="Maria Laís cantando Traumatizou no DVD" width="900" height="1350" loading="lazy"><video muted playsinline loop preload="none" data-src="assets/video/prev-traumatizou.mp4" aria-hidden="true"></video></div>
+              <div class="card__info"><span class="card__rank">01</span><h3>Traumatizou</h3><p><span class="tag">Inédita</span> 3:13</p></div>
             </li>
-            <li class="card card--hero" data-yt="Osg6x8ff1PI" data-yt-title="Reinicia, feat. Naessa" data-cursor="Assistir" tabindex="0" role="button">
-              <div class="card__media"><img src="assets/img/palco-15.jpg" alt="Maria Laís e Naessa cantando Reinicia" loading="lazy"><video muted playsinline loop preload="none" data-src="assets/video/preview-reinicia.mp4" aria-hidden="true"></video></div>
-              <div class="card__info"><span class="card__rank">2</span><h3>Reinicia <small>feat. Naessa</small></h3><p><span class="tag">Inédita</span> 2:53 </p></div>
+            <li class="card" data-yt="Osg6x8ff1PI" data-yt-title="Reinicia, feat. Naessa" data-cursor="Assistir" tabindex="0" role="button">
+              <div class="card__media"><img src="assets/img/card-reinicia.webp" alt="Maria Laís cantando Reinicia" width="900" height="1350" loading="lazy"><video muted playsinline loop preload="none" data-src="assets/video/prev-reinicia.mp4" aria-hidden="true"></video></div>
+              <div class="card__info"><span class="card__rank">02</span><h3>Reinicia <small>feat. Naessa</small></h3><p><span class="tag">Inédita</span> 2:53</p></div>
             </li>
-            <li class="card card--hero" data-yt="IL7bzaJbU4o" data-yt-title="Mais ou Menos Assim, DVD completo" data-cursor="Assistir" tabindex="0" role="button">
-              <div class="card__media"><img src="assets/img/palco-01.jpg" alt="Palco do DVD Mais ou Menos Assim com o público" loading="lazy"><video muted playsinline loop preload="none" data-src="assets/video/preview-dvd.mp4" aria-hidden="true"></video></div>
-              <div class="card__info"><span class="card__rank">3</span><h3>DVD completo</h3><p>41:14 </p></div>
+            <li class="card" data-yt="IL7bzaJbU4o" data-yt-title="Mais ou Menos Assim, DVD completo" data-cursor="Assistir" tabindex="0" role="button">
+              <div class="card__media"><img src="assets/img/card-dvd.webp" alt="Maria Laís no palco do DVD Mais ou Menos Assim" width="900" height="1350" loading="lazy"><video muted playsinline loop preload="none" data-src="assets/video/prev-dvd.mp4" aria-hidden="true"></video></div>
+              <div class="card__info"><span class="card__rank">03</span><h3>DVD completo</h3><p>41:14</p></div>
             </li>
             <li class="card" data-yt="hw3Hs9pS0wg" data-yt-title="Disk Me / Perto de Você / Prisão sem Grades" data-cursor="Assistir" tabindex="0" role="button">
-              <div class="card__media"><img src="https://i.ytimg.com/vi/hw3Hs9pS0wg/hqdefault.jpg" data-fallback="assets/img/palco-06.jpg" alt="" loading="lazy"></div>
-              <div class="card__info"><span class="card__rank">4</span><h3>Disk Me / Perto de Você / Prisão sem Grades</h3><p>4:56</p></div>
+              <div class="card__media"><img src="assets/img/card-diskme.webp" alt="Maria Laís sorrindo no palco" width="900" height="1350" loading="lazy"><video muted playsinline loop preload="none" data-src="assets/video/prev-diskme.mp4" aria-hidden="true"></video></div>
+              <div class="card__info"><span class="card__rank">04</span><h3>Disk Me / Perto de Você / Prisão sem Grades</h3><p>4:56</p></div>
             </li>
             <li class="card" data-yt="rPbvXu30g2A" data-yt-title="Esse Amor que me Mata / Não Olhe Assim / Antes de Voltar pra Casa" data-cursor="Assistir" tabindex="0" role="button">
-              <div class="card__media"><img src="https://i.ytimg.com/vi/rPbvXu30g2A/hqdefault.jpg" data-fallback="assets/img/palco-04.jpg" alt="" loading="lazy"></div>
-              <div class="card__info"><span class="card__rank">5</span><h3>Esse Amor que me Mata / Não Olhe Assim / Antes de Voltar pra Casa</h3><p>5:14</p></div>
+              <div class="card__media"><img src="assets/img/card-esseamor.webp" alt="Maria Laís cantando com o público ao fundo" width="900" height="1350" loading="lazy"><video muted playsinline loop preload="none" data-src="assets/video/prev-esseamor.mp4" aria-hidden="true"></video></div>
+              <div class="card__info"><span class="card__rank">05</span><h3>Esse Amor que me Mata / Não Olhe Assim / Antes de Voltar pra Casa</h3><p>5:14</p></div>
             </li>
             <li class="card" data-yt="iwMEwciiYGk" data-yt-title="Final Feliz / Não Desligue o Telefone / O Amor não Deixa" data-cursor="Assistir" tabindex="0" role="button">
-              <div class="card__media"><img src="https://i.ytimg.com/vi/iwMEwciiYGk/hqdefault.jpg" data-fallback="assets/img/palco-09.jpg" alt="" loading="lazy"></div>
-              <div class="card__info"><span class="card__rank">6</span><h3>Final Feliz / Não Desligue o Telefone / O Amor não Deixa</h3><p>4:31</p></div>
+              <div class="card__media"><img src="assets/img/card-finalfeliz.webp" alt="Maria Laís cantando no pedestal" width="900" height="1350" loading="lazy"><video muted playsinline loop preload="none" data-src="assets/video/prev-finalfeliz.mp4" aria-hidden="true"></video></div>
+              <div class="card__info"><span class="card__rank">06</span><h3>Final Feliz / Não Desligue o Telefone / O Amor não Deixa</h3><p>4:31</p></div>
             </li>
             <li class="card" data-yt="pqQ69zq_pwo" data-yt-title="Nuvem de Lágrimas / Meu Desespero / Roupa de Lua de Mel" data-cursor="Assistir" tabindex="0" role="button">
-              <div class="card__media"><img src="https://i.ytimg.com/vi/pqQ69zq_pwo/hqdefault.jpg" data-fallback="assets/img/palco-22.jpg" alt="" loading="lazy"></div>
-              <div class="card__info"><span class="card__rank">7</span><h3>Nuvem de Lágrimas / Meu Desespero / Roupa de Lua de Mel</h3><p>5:52</p></div>
+              <div class="card__media"><img src="assets/img/card-nuvem.webp" alt="Maria Laís em close, emocionada" width="900" height="1350" loading="lazy"><video muted playsinline loop preload="none" data-src="assets/video/prev-nuvem.mp4" aria-hidden="true"></video></div>
+              <div class="card__info"><span class="card__rank">07</span><h3>Nuvem de Lágrimas / Meu Desespero / Roupa de Lua de Mel</h3><p>5:52</p></div>
             </li>
             <li class="card" data-yt="6KP45ywmIMQ" data-yt-title="Te Levo Comigo / Conto de Fadas / No Dia do seu Casamento" data-cursor="Assistir" tabindex="0" role="button">
-              <div class="card__media"><img src="https://i.ytimg.com/vi/6KP45ywmIMQ/hqdefault.jpg" data-fallback="assets/img/palco-21.jpg" alt="" loading="lazy"></div>
-              <div class="card__info"><span class="card__rank">8</span><h3>Te Levo Comigo / Conto de Fadas / No Dia do seu Casamento</h3><p>5:18</p></div>
+              <div class="card__media"><img src="assets/img/card-televo.webp" alt="Maria Laís animando o público" width="900" height="1350" loading="lazy"><video muted playsinline loop preload="none" data-src="assets/video/prev-televo.mp4" aria-hidden="true"></video></div>
+              <div class="card__info"><span class="card__rank">08</span><h3>Te Levo Comigo / Conto de Fadas / No Dia do seu Casamento</h3><p>5:18</p></div>
             </li>
             <li class="card" data-yt="g1m-NUXf--A" data-yt-title="Você Sempre Será / Bem que se Quis / Evidências" data-cursor="Assistir" tabindex="0" role="button">
-              <div class="card__media"><img src="https://i.ytimg.com/vi/g1m-NUXf--A/hqdefault.jpg" data-fallback="assets/img/palco-14.jpg" alt="" loading="lazy"></div>
-              <div class="card__info"><span class="card__rank">9</span><h3>Você Sempre Será / Bem que se Quis / Evidências</h3><p>4:52</p></div>
+              <div class="card__media"><img src="assets/img/card-voce.webp" alt="Maria Laís cantando de olhos fechados" width="900" height="1350" loading="lazy"><video muted playsinline loop preload="none" data-src="assets/video/prev-voce.mp4" aria-hidden="true"></video></div>
+              <div class="card__info"><span class="card__rank">09</span><h3>Você Sempre Será / Bem que se Quis / Evidências</h3><p>4:52</p></div>
             </li>
             <li class="card" data-yt="nlkBl0MySNk" data-yt-title="Camas Avulsas" data-cursor="Assistir" tabindex="0" role="button">
-              <div class="card__media"><img src="https://i.ytimg.com/vi/nlkBl0MySNk/hqdefault.jpg" data-fallback="assets/img/palco-17.jpg" alt="" loading="lazy"></div>
+              <div class="card__media"><img src="assets/img/card-camas.webp" alt="Maria Laís com o braço erguido" width="900" height="1350" loading="lazy"><video muted playsinline loop preload="none" data-src="assets/video/prev-camas.mp4" aria-hidden="true"></video></div>
               <div class="card__info"><span class="card__rank">10</span><h3>Camas Avulsas</h3><p><span class="tag">Inédita</span> 3:12</p></div>
             </li>
             <li class="card" data-yt="3uFGzbGgae4" data-yt-title="Deu Bom Demais" data-cursor="Assistir" tabindex="0" role="button">
-              <div class="card__media"><img src="https://i.ytimg.com/vi/3uFGzbGgae4/hqdefault.jpg" data-fallback="assets/img/palco-07.jpg" alt="" loading="lazy"></div>
+              <div class="card__media"><img src="assets/img/card-deubom.webp" alt="Maria Laís sorrindo ao cantar" width="900" height="1350" loading="lazy"><video muted playsinline loop preload="none" data-src="assets/video/prev-deubom.mp4" aria-hidden="true"></video></div>
               <div class="card__info"><span class="card__rank">11</span><h3>Deu Bom Demais</h3><p><span class="tag">Inédita</span> 2:42</p></div>
             </li>
             <li class="card card--end">
@@ -249,8 +242,8 @@
     </section>
 
     <!-- 6. SETLIST INTERATIVO -->
-    <section class="setlist" id="setlist" aria-labelledby="setlist-titulo" data-accent="rosa">
-      <header class="setlist__head">
+    <section class="setlist" id="setlist" aria-labelledby="setlist-titulo">
+      <header class="setlist__head sec-head">
         <h2 id="setlist-titulo" data-play-type>O show inteiro, <em>faixa a faixa</em></h2>
         <p>Cada barra é um trecho dos 41 minutos do DVD. Toque ou passe o mouse para encontrar uma música e assista a partir dela.</p>
       </header>
@@ -263,54 +256,57 @@
     </section>
 
     <!-- 7. EXPERIÊNCIAS: lista com imagem que segue o cursor -->
-    <section class="exp" id="experiencias" aria-labelledby="exp-titulo" data-accent="ciano">
-      <header class="exp__head">
+    <section class="exp" id="experiencias" aria-labelledby="exp-titulo">
+      <header class="exp__head sec-head">
         <h2 id="exp-titulo" data-play-type>Onde a Mala chega, <em>vira palco</em></h2>
         <p>Do boteco ao palco principal. Escolha um formato e fale direto com a equipe.</p>
       </header>
       <ul class="exp__list" data-exp>
-        <li class="exp__row" data-img="assets/img/palco-23.jpg">
+        <li class="exp__row" data-img="assets/img/exp-movel.webp">
           <a href="#contratar" data-wa="Quero o projeto Mala Móvel" data-cursor="Pedir">
-            <span class="exp__thumb" aria-hidden="true"><img src="assets/img/palco-23.jpg" alt="" loading="lazy"></span>
+            <span class="exp__thumb" aria-hidden="true"><img src="assets/img/exp-movel.webp" alt="" loading="lazy"></span>
             <span class="exp__name">Mala Móvel</span>
             <span class="exp__desc">Palco intimista onde você estiver: chego com a mala vintage e o equipamento completo.</span>
           </a>
         </li>
-        <li class="exp__row" data-img="assets/img/palco-02.jpg">
+        <li class="exp__row" data-img="assets/img/exp-boteco.webp">
           <a href="#contratar" data-wa="Quero o projeto Boteco Delivery" data-cursor="Pedir">
-            <span class="exp__thumb" aria-hidden="true"><img src="assets/img/palco-02.jpg" alt="" loading="lazy"></span>
+            <span class="exp__thumb" aria-hidden="true"><img src="assets/img/exp-boteco.webp" alt="" loading="lazy"></span>
             <span class="exp__name">Boteco Delivery</span>
             <span class="exp__desc">O clima do boteco na sua casa, empresa ou evento, com o modão que todo mundo canta junto.</span>
           </a>
         </li>
-        <li class="exp__row" data-img="assets/img/palco-10.jpg">
+        <li class="exp__row" data-img="assets/img/exp-bares.webp">
           <a href="#contratar" data-wa="Quero um show em bar ou casa de show" data-cursor="Pedir">
-            <span class="exp__thumb" aria-hidden="true"><img src="assets/img/palco-10.jpg" alt="" loading="lazy"></span>
+            <span class="exp__thumb" aria-hidden="true"><img src="assets/img/exp-bares.webp" alt="" loading="lazy"></span>
             <span class="exp__name">Bares e casas</span>
             <span class="exp__desc">De 2 a 3 horas de show, da sofrência ao sertanejo moderno, com equipamento completo.</span>
           </a>
         </li>
-        <li class="exp__row" data-img="assets/img/palco-13.jpg">
+        <li class="exp__row" data-img="assets/img/exp-privados.webp">
           <a href="#contratar" data-wa="Quero um show para um evento privado" data-cursor="Pedir">
-            <span class="exp__thumb" aria-hidden="true"><img src="assets/img/palco-13.jpg" alt="" loading="lazy"></span>
+            <span class="exp__thumb" aria-hidden="true"><img src="assets/img/exp-privados.webp" alt="" loading="lazy"></span>
             <span class="exp__name">Eventos privados</span>
             <span class="exp__desc">Casamentos, aniversários, formaturas e confraternizações com repertório sob medida.</span>
           </a>
         </li>
-        <li class="exp__row" data-img="assets/img/palco-05.jpg">
+        <li class="exp__row" data-img="assets/img/exp-marcas.webp">
           <a href="#contratar" data-wa="Quero uma ação para a minha marca" data-cursor="Pedir">
-            <span class="exp__thumb" aria-hidden="true"><img src="assets/img/palco-05.jpg" alt="" loading="lazy"></span>
+            <span class="exp__thumb" aria-hidden="true"><img src="assets/img/exp-marcas.webp" alt="" loading="lazy"></span>
             <span class="exp__name">Marcas</span>
             <span class="exp__desc">Experiências musicais e conteúdo para redes com uma artista acompanhada por milhões.</span>
           </a>
         </li>
       </ul>
-      <div class="exp__float" data-exp-float aria-hidden="true"><img data-exp-float-img src="assets/img/palco-23.jpg" alt=""></div>
+      <div class="exp__float" data-exp-float aria-hidden="true"><img data-exp-float-img src="assets/img/exp-movel.webp" alt=""></div>
     </section>
 
     <!-- 9. GALERIA -->
-    <section class="galeria" id="galeria" aria-labelledby="galeria-titulo" data-accent="rosa">
-      <h2 id="galeria-titulo" class="galeria__title" data-play-type>Por dentro do palco</h2>
+    <section class="galeria" id="galeria" aria-labelledby="galeria-titulo">
+      <header class="galeria__head sec-head">
+        <h2 id="galeria-titulo" class="galeria__title" data-play-type>Por dentro do palco</h2>
+        <p>Momentos do DVD gravado em 4K. Clique para ver em tela cheia.</p>
+      </header>
       <div class="galeria__rows" data-gallery>
         <div class="galeria__row" data-row="1"></div>
         <div class="galeria__row" data-row="-1"></div>
@@ -318,8 +314,8 @@
     </section>
 
     <!-- 11. COMUNIDADE -->
-    <section class="social" aria-labelledby="social-titulo" data-accent="ciano">
-      <h2 id="social-titulo" class="social__handle" data-chrome-text>@amalacanta</h2>
+    <section class="social" aria-labelledby="social-titulo">
+      <h2 id="social-titulo" class="social__handle" ><span class="at">@</span>amalacanta</h2>
       <p class="social__lead">Bastidores, modão e surpresas todos os dias para mais de 3 milhões de pessoas.</p>
       <ul class="social__links">
         <li><a href="https://www.instagram.com/amalacanta/" target="_blank" rel="noopener" data-magnetic><span>Instagram</span><small>Seguir</small></a></li>
@@ -331,12 +327,12 @@
     </section>
 
     <!-- 12. CONTRATAÇÃO -->
-    <section class="cta" id="contratar" aria-labelledby="cta-titulo" data-cta data-accent="ciano">
+    <section class="cta" id="contratar" aria-labelledby="cta-titulo" data-cta>
       <video class="cta__bg" data-lazy-video muted playsinline loop preload="none" poster="assets/img/cta-poster.jpg" data-src="assets/video/cta-fundo.mp4" aria-hidden="true"></video>
       <div class="cta__spot" aria-hidden="true"></div>
       <div class="cta__wrap">
         <h2 id="cta-titulo" class="cta__title" data-cta-title><span class="cta__l">Leve a Mala</span> <span class="cta__l">pro seu <em>palco.</em></span></h2>
-        <div class="cta__grid">
+        <p class="cta__lead">Shows, eventos privados e ações para marcas em todo o Brasil. Monte o pedido em três passos e ele chega pronto no WhatsApp da equipe.</p>
         <form class="booking" data-booking novalidate aria-labelledby="booking-titulo">
           <div class="booking__head">
             <p id="booking-titulo" class="booking__title">Pedido de show</p>
@@ -388,8 +384,7 @@
           </div>
         </form>
 
-        <aside class="cta__side">
-          <p class="cta__lead">Shows, eventos privados e ações para marcas em todo o Brasil. Monte o pedido ao lado ou chame direto.</p>
+        <div class="cta__direct">
           <a class="cta__wa" href="https://wa.me/5534984009272" target="_blank" rel="noopener" data-cursor="Chamar"><small>WhatsApp da equipe</small><strong>(34) 98400-9272</strong></a>
           <dl class="cta__contacts">
             <div><dt>E-mail</dt><dd><a href="mailto:contato@marialais.com.br">contato@marialais.com.br</a></dd></div>
@@ -397,7 +392,6 @@
             <div><dt>Agenciamento</dt><dd>GIBSON Promoções</dd></div>
             <div><dt>Base</dt><dd>Uberlândia, MG</dd></div>
           </dl>
-        </aside>
         </div>
       </div>
     </section>
@@ -467,6 +461,6 @@
   <script src="assets/vendor/ScrollTrigger.min.js"></script>
   <script src="assets/vendor/SplitText.min.js"></script>
   <script src="assets/vendor/lenis.min.js"></script>
-  <script src="assets/js/main.js?v=4"></script>
+  <script src="assets/js/main.js?v=6"></script>
 </body>
 </html>
