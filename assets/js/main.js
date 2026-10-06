@@ -93,6 +93,34 @@
   intro.play().catch(() => {});
 
   /* =========================================================
+     PRELOADER: contador 000 → 100 com as barras do logo
+     ========================================================= */
+  const loaderEl = $('[data-loader]');
+  let introDone;
+  const introReady = new Promise((r) => (introDone = r));
+  (function loader() {
+    if (!loaderEl || reduce) { loaderEl && loaderEl.remove(); introDone(); return; }
+    document.body.classList.add('is-loading');
+    const behindL = ['.skip', 'header.nav', 'main', 'footer', '[data-dock]', '.wa-float'].map((q) => $(q)).filter(Boolean);
+    behindL.forEach((el) => (el.inert = true));
+    lenis && lenis.stop();
+    const num = $('[data-loader-num]'), bars = $$('.loader__bars i', loaderEl);
+    const st = { v: 0 };
+    const counter = gsap.to(st, { v: 86, duration: 1.4, ease: 'power2.out', onUpdate: () => { num.textContent = String(Math.round(st.v)).padStart(3, '0'); bars.forEach((b, i) => gsap.set(b, { scaleY: clamp(st.v / 100 * 1.2 - i * 0.08 + 0.15 * Math.sin(st.v / 6 + i), 0.12, 1) })); } });
+    const ready = new Promise((r) => { if (intro.readyState >= 2) r(); intro.addEventListener('loadeddata', r, { once: true }); intro.addEventListener('error', r, { once: true }); });
+    Promise.race([Promise.all([document.fonts.ready, ready, new Promise((r) => setTimeout(r, 1300))]), new Promise((r) => setTimeout(r, 4000))]).then(() => {
+      counter.kill();
+      gsap.timeline({ onComplete: () => { loaderEl.remove(); behindL.forEach((el) => (el.inert = false)); document.body.classList.remove('is-loading'); lenis && lenis.start(); ScrollTrigger.refresh(); } })
+        .to(st, { v: 100, duration: 0.4, ease: 'power1.out', onUpdate: () => (num.textContent = String(Math.round(st.v)).padStart(3, '0')) })
+        .to(bars, { scaleY: 1, duration: 0.3, stagger: 0.04, ease: 'power2.out' }, 0)
+        .to('.loader__count, .loader__label', { yPercent: -60, opacity: 0, duration: 0.6, ease: 'power3.in' }, 0.45)
+        .to(bars, { scaleY: 0, duration: 0.5, stagger: 0.04, ease: 'power3.in' }, 0.5)
+        .to(loaderEl, { clipPath: 'inset(0 0 100% 0)', duration: 0.9, ease: 'expo.inOut' }, 0.8)
+        .add(introDone, 1.1);
+    });
+  })();
+
+  /* =========================================================
      Cursor e botões magnéticos
      ========================================================= */
   if (fine && !reduce) {
@@ -171,34 +199,166 @@
   $$('[data-lazy-video]').forEach((v) => lazyIO.observe(v));
 
   /* =========================================================
-     Player do YouTube (carrega só no clique)
+     PLAYER PRÓPRIO (YouTube IFrame API sem controles nativos)
      ========================================================= */
   const player = $('[data-player]');
   const frame = $('[data-player-frame]');
-  let lastFocus = null;
-  let musicWasOn = false;
+  const mpStage = $('[data-mp-stage]');
+  const mpTitle = $('[data-player-title]');
+  const mpYT = $('[data-player-yt]');
+  const mpPoster = $('[data-mp-poster]');
+  const mpPosterImg = $('[data-mp-poster-img]');
+  const mpSeek = $('[data-mp-seek]');
+  const mpProg = $('[data-mp-prog]');
+  const mpBuf = $('[data-mp-buf]');
+  const mpTip = $('[data-mp-tip]');
+  const mpMarks = $('[data-mp-marks]');
+  const mpCur = $('[data-mp-cur]');
+  const mpDur = $('[data-mp-dur]');
+  const mpChap = $('[data-mp-chap]');
+  const mpVol = $('[data-mp-vol]');
+  const mpList = $('[data-mp-list]');
+  let lastFocus = null, musicWasOn = false, yt = null, ytReady = null, current = null, poll = 0, idleT = 0, dragging = false;
+  const fmtT = (s) => { s = Math.max(0, Math.floor(s || 0)); const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), x = s % 60; return (h ? `${h}:${String(m).padStart(2, '0')}` : String(m).padStart(2, '0')) + ':' + String(x).padStart(2, '0'); };
+
+  // playlist: os cards das mais assistidas (na mesma ordem) + capítulos do DVD
+  const PLAYLIST = $$('.card[data-yt]').map((c) => ({ id: c.dataset.yt, title: c.dataset.ytTitle, img: (c.querySelector('img') || {}).getAttribute ? c.querySelector('img').getAttribute('src') : '', meta: (c.querySelector('.card__info p') || {}).textContent || '' }));
+  mpList.innerHTML = PLAYLIST.map((v, i) => `<li><button type="button" data-mp-item="${i}"><img src="${v.img}" alt="" loading="lazy"><span><b>${v.title.replace(/</g, '&lt;')}</b><small>${String(i + 1).padStart(2, '0')} · ${v.meta.replace(/Inédita/i, 'INÉDITA ·').trim()}</small></span></button></li>`).join('');
+
+  function loadYT() {
+    if (ytReady) return ytReady;
+    ytReady = new Promise((resolve, reject) => {
+      if (window.YT && window.YT.Player) return resolve(window.YT);
+      const prev = window.onYouTubeIframeAPIReady;
+      window.onYouTubeIframeAPIReady = () => { prev && prev(); resolve(window.YT); };
+      const s = document.createElement('script');
+      s.src = 'https://www.youtube.com/iframe_api';
+      s.onerror = reject;
+      document.head.appendChild(s);
+      setTimeout(() => reject(new Error('timeout')), 9000);
+    });
+    return ytReady;
+  }
+  function chaptersFor(id) { return id === DVD_ID ? SETLIST : null; }
+  function drawMarks(id, dur) {
+    const ch = chaptersFor(id);
+    mpMarks.innerHTML = ch && dur ? ch.slice(1).map((c) => `<i style="left:${(c.t / dur) * 100}%"></i>`).join('') : '';
+  }
+  function chapterAt(id, t) { const ch = chaptersFor(id); if (!ch) return ''; let k = 0; ch.forEach((c, i) => { if (t >= c.t) k = i; }); return `${String(k + 1).padStart(2, '0')} · ${ch[k].title}`; }
+  function setState(cls, on) { player.classList.toggle(cls, on); }
+  function tick() {
+    if (!yt || !yt.getDuration) return;
+    const d = yt.getDuration() || 0, t = dragging ? +mpSeek.dataset.t || 0 : (yt.getCurrentTime() || 0);
+    mpProg.style.transform = `scaleX(${d ? t / d : 0})`;
+    mpBuf.style.transform = `scaleX(${yt.getVideoLoadedFraction ? yt.getVideoLoadedFraction() : 0})`;
+    mpCur.textContent = fmtT(t); mpDur.textContent = fmtT(d);
+    mpSeek.setAttribute('aria-valuenow', d ? Math.round((t / d) * 100) : 0);
+    mpChap.textContent = chapterAt(current && current.id, t);
+    if (d && !mpMarks.dataset.done) { drawMarks(current.id, d); mpMarks.dataset.done = '1'; }
+  }
+  function onState(e) {
+    const S = window.YT.PlayerState;
+    setState('is-playing', e.data === S.PLAYING);
+    setState('is-paused', e.data === S.PAUSED);
+    setState('is-buffering', e.data === S.BUFFERING);
+    if (e.data === S.PLAYING) { setState('is-started', true); wake(); }
+    if (e.data === S.ENDED) next(1);
+  }
+  function wake() {
+    setState('is-idle', false);
+    clearTimeout(idleT);
+    idleT = setTimeout(() => { if (player.classList.contains('is-playing') && !dragging) setState('is-idle', true); }, 2600);
+  }
+  function load(item, start = 0, autoplay = true) {
+    current = item;
+    mpMarks.dataset.done = ''; mpMarks.innerHTML = '';
+    mpTitle.textContent = item.title;
+    mpYT.href = `https://www.youtube.com/watch?v=${encodeURIComponent(item.id)}${start ? `&t=${start}s` : ''}`;
+    mpPosterImg.src = item.img || 'assets/img/card-dvd.webp';
+    setState('is-started', false);
+    $$('[data-mp-item]', mpList).forEach((b) => b.classList.toggle('is-current', PLAYLIST[+b.dataset.mpItem].id === item.id));
+    const cur = $('.is-current', mpList); cur && cur.scrollIntoView({ block: 'nearest' });
+    gsap.fromTo(mpTitle, { yPercent: 100, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 0.8, ease: 'expo.out' });
+    setState('is-buffering', true);
+    loadYT().then((YT) => {
+      if (!yt) {
+        const el = document.createElement('div'); frame.replaceChildren(el);
+        yt = new YT.Player(el, {
+          host: 'https://www.youtube-nocookie.com', videoId: item.id,
+          playerVars: { autoplay: autoplay ? 1 : 0, controls: 0, disablekb: 1, fs: 0, rel: 0, iv_load_policy: 3, modestbranding: 1, playsinline: 1, start: Math.floor(start), origin: location.origin },
+          events: {
+            onReady: () => { yt.setVolume(+mpVol.value); if (autoplay) yt.playVideo(); setState('is-buffering', false); },
+            onStateChange: onState
+          }
+        });
+      } else {
+        autoplay ? yt.loadVideoById({ videoId: item.id, startSeconds: start }) : yt.cueVideoById({ videoId: item.id, startSeconds: start });
+      }
+    }).catch(() => { setState('is-buffering', false); player.close(); openExternal(mpYT.href); });
+    clearInterval(poll); poll = setInterval(tick, 250);
+  }
   function openPlayer(id, title, start = 0) {
     if (PREVIEW) { openExternal(`https://www.youtube.com/watch?v=${encodeURIComponent(id)}${start ? `&t=${start}s` : ''}`); return; }
     musicWasOn = music.wanted;
     if (musicWasOn) music.pause();
     lastFocus = document.activeElement;
-    const ifr = document.createElement('iframe');
-    ifr.src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}?autoplay=1&rel=0&playsinline=1${start ? `&start=${start}` : ''}`;
-    ifr.title = title || 'Vídeo da Maria Laís';
-    ifr.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
-    ifr.referrerPolicy = 'strict-origin-when-cross-origin';
-    frame.replaceChildren(ifr);
-    $('[data-player-title]').textContent = title || '';
-    $('[data-player-yt]').href = `https://www.youtube.com/watch?v=${encodeURIComponent(id)}${start ? `&t=${start}s` : ''}`;
-    player.showModal();
-    $('[data-player-close]').focus();
+    const found = PLAYLIST.find((v) => v.id === id);
+    const item = found ? { ...found } : { id, title: title || 'Maria Laís', img: 'assets/img/card-dvd.webp', meta: '' };
+    if (id === DVD_ID && title && start) item.title = `DVD completo · ${title}`; else if (id === DVD_ID) item.title = 'Mais ou Menos Assim, DVD completo';
+    if (!player.open) player.showModal();
+    load(item, start, true);
+    $('[data-mp-play]').focus({ preventScroll: true });
     lenis && lenis.stop();
-    gsap.fromTo('.player__box', { y: 40, opacity: 0, scale: 0.96 }, { y: 0, opacity: 1, scale: 1, duration: 0.8 });
+    gsap.fromTo('.mp__box', { y: 40, opacity: 0, scale: 0.97 }, { y: 0, opacity: 1, scale: 1, duration: 0.9, ease: 'expo.out' });
+    gsap.from('.mp__list li', { x: 30, opacity: 0, duration: 0.8, stagger: 0.04, ease: 'expo.out', delay: 0.15 });
+  }
+  function toggle() { if (!yt || !yt.getPlayerState) return; const S = window.YT.PlayerState; yt.getPlayerState() === S.PLAYING ? yt.pauseVideo() : yt.playVideo(); wake(); }
+  function next(dir) { if (!current) return; const i = PLAYLIST.findIndex((v) => v.id === current.id); const n = PLAYLIST[(i + dir + PLAYLIST.length) % PLAYLIST.length]; load(n, 0, true); }
+  function seekTo(clientX, commit) {
+    const r = mpSeek.getBoundingClientRect(); const p = clamp((clientX - r.left) / r.width, 0, 1);
+    const d = yt && yt.getDuration ? yt.getDuration() : 0; const t = p * d;
+    mpSeek.dataset.t = t;
+    mpTip.style.left = `${p * 100}%`; mpTip.textContent = `${fmtT(t)}${chapterAt(current && current.id, t) ? '  ·  ' + chapterAt(current.id, t) : ''}`;
+    if (commit && yt) yt.seekTo(t, true);
+    tick();
   }
   function closePlayer() { player.close(); }
-  player.addEventListener('close', () => { frame.innerHTML = ''; lenis && lenis.start(); lastFocus && lastFocus.focus && lastFocus.focus(); if (musicWasOn) music.play(); });
+  player.addEventListener('close', () => {
+    clearInterval(poll); clearTimeout(idleT);
+    try { yt && yt.pauseVideo && yt.pauseVideo(); } catch (e) {}
+    if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+    setState('is-playing', false); setState('is-idle', false);
+    lenis && lenis.start(); lastFocus && lastFocus.focus && lastFocus.focus(); if (musicWasOn) music.play();
+  });
   player.addEventListener('click', (e) => { if (e.target === player) closePlayer(); });
   $('[data-player-close]').addEventListener('click', closePlayer);
+  $('[data-mp-hit]').addEventListener('click', toggle);
+  $('[data-mp-hit]').addEventListener('dblclick', () => $('[data-mp-fs]').click());
+  mpPoster.addEventListener('click', () => { yt && yt.playVideo ? yt.playVideo() : null; });
+  $('[data-mp-play]').addEventListener('click', toggle);
+  $('[data-mp-prev]').addEventListener('click', () => next(-1));
+  $('[data-mp-next]').addEventListener('click', () => next(1));
+  $('[data-mp-mute]').addEventListener('click', () => { if (!yt) return; const m = yt.isMuted(); m ? yt.unMute() : yt.mute(); setState('is-muted', !m); });
+  mpVol.addEventListener('input', () => { if (!yt) return; yt.setVolume(+mpVol.value); if (+mpVol.value > 0 && yt.isMuted()) { yt.unMute(); setState('is-muted', false); } });
+  $('[data-mp-fs]').addEventListener('click', () => {
+    if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+    else (mpStage.requestFullscreen || mpStage.webkitRequestFullscreen || (() => {})).call(mpStage);
+  });
+  mpList.addEventListener('click', (e) => { const b = e.target.closest('[data-mp-item]'); if (b) load(PLAYLIST[+b.dataset.mpItem], 0, true); });
+  mpSeek.addEventListener('pointerdown', (e) => { dragging = true; mpSeek.classList.add('is-drag'); mpSeek.setPointerCapture(e.pointerId); seekTo(e.clientX, false); });
+  mpSeek.addEventListener('pointermove', (e) => { seekTo(e.clientX, false); if (!dragging) { mpSeek.dataset.t = ''; } wake(); });
+  mpSeek.addEventListener('pointerup', (e) => { if (!dragging) return; dragging = false; mpSeek.classList.remove('is-drag'); seekTo(e.clientX, true); });
+  mpStage.addEventListener('pointermove', wake);
+  player.addEventListener('keydown', (e) => {
+    if (!yt || !yt.getCurrentTime) return;
+    if (e.target.closest('input, .mp__list, .mp__bar')) return;
+    const k = e.key.toLowerCase();
+    if (k === ' ' || k === 'k') { e.preventDefault(); toggle(); }
+    else if (k === 'arrowright') { e.preventDefault(); yt.seekTo(yt.getCurrentTime() + 5, true); wake(); }
+    else if (k === 'arrowleft') { e.preventDefault(); yt.seekTo(Math.max(0, yt.getCurrentTime() - 5), true); wake(); }
+    else if (k === 'm') $('[data-mp-mute]').click();
+    else if (k === 'f') $('[data-mp-fs]').click();
+  });
   document.addEventListener('click', (e) => {
     const el = e.target.closest('[data-yt]');
     if (!el) return;
@@ -346,7 +506,7 @@
   }
   function off() { autoEvents.forEach((t) => removeEventListener(t, autoStart, true)); }
   autoEvents.forEach((t) => addEventListener(t, autoStart, true));
-  setTimeout(() => $('[data-dock]').classList.add('is-visible'), reduce ? 0 : 1600);
+  introReady.then(() => setTimeout(() => $('[data-dock]').classList.add('is-visible'), reduce ? 0 : 900));
 
   /* pulso da música (0..1) em --beat: o logo da abertura respira no ritmo */
   let beat = 0;
@@ -355,7 +515,7 @@
     if (music.playing) { const lv = music.levels(6); target = Math.min(1, (lv[0] * 0.6 + lv[1] * 0.4) * 1.35); }
     beat += (target - beat) * (target > beat ? 0.45 : 0.12);
     if (beat < 0.002) beat = 0;
-    root.style.setProperty('--beat', beat.toFixed(3));
+    if (beat || root.__b) { root.style.setProperty('--beat', beat.toFixed(3)); root.__b = beat; }
   });
 
   /* =========================================================
@@ -429,8 +589,11 @@
   const heroSplit = splits.get(heroTitle);
   if (!reduce) {
     // entrada: o logo acende como luz de palco
-    gsap.from(heroHalo, { opacity: 0, scale: 0.9, duration: 2, ease: 'expo.out', delay: 0.15 });
-    gsap.from('[data-hero-cue]', { opacity: 0, y: 20, duration: 1.2, delay: 0.9 });
+    gsap.set(heroHalo, { opacity: 0, scale: 0.86 }); gsap.set('[data-hero-cue]', { opacity: 0, y: 20 });
+    introReady.then(() => {
+      gsap.to(heroHalo, { opacity: 1, scale: 1, duration: 2.2, ease: 'expo.out' });
+      gsap.to('[data-hero-cue]', { opacity: 1, y: 0, duration: 1.2, delay: 0.8 });
+    });
     if (heroSplit) gsap.set(heroSplit.words, { yPercent: 110 });
 
     const tl = gsap.timeline({
@@ -468,7 +631,9 @@
     const dir = +track.dataset.band || -1;
     let x = 0, half = track.scrollWidth / 2;
     addEventListener('resize', () => (half = track.scrollWidth / 2));
+    let bandVis = true; new IntersectionObserver(([e]) => (bandVis = e.isIntersecting)).observe(track);
     gsap.ticker.add((t, dt) => {
+      if (!bandVis) return;
       const flip = scrollVel < -40 ? -1 : 1;
       const speed = (0.7 + Math.min(8, Math.abs(scrollVel) / 300)) * dir * flip;
       x += speed * (dt / 16.67);
@@ -478,6 +643,81 @@
     });
   });
   gsap.ticker.add(() => { scrollVel *= 0.94; });
+
+  /* =========================================================
+     IDENTIDADE EM MOVIMENTO
+     ========================================================= */
+  // texto que decodifica (rótulos mono, HUD)
+  const GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789/—·#';
+  function scramble(el, text, dur = 0.9) {
+    if (reduce) { el.textContent = text; return; }
+    const o = { p: 0 }; const len = text.length;
+    gsap.killTweensOf(el.__s || {});
+    el.__s = o;
+    gsap.to(o, { p: 1, duration: dur, ease: 'none', onUpdate: () => {
+      const n = Math.floor(o.p * len);
+      let out = text.slice(0, n);
+      for (let i = n; i < len; i++) out += text[i] === ' ' ? ' ' : GLYPHS[(Math.random() * GLYPHS.length) | 0];
+      el.textContent = out;
+    }, onComplete: () => (el.textContent = text) });
+  }
+  $$('[data-scramble]').forEach((el) => {
+    const txt = el.textContent;
+    if (reduce) return;
+    el.textContent = '';
+    ScrollTrigger.create({ trigger: el.parentElement, start: 'top 85%', once: true, onEnter: () => scramble(el, txt, 1.1) });
+  });
+  $$('.nav__links a').forEach((a) => { const t = a.textContent; a.addEventListener('pointerenter', () => scramble(a, t, 0.45)); });
+
+
+  // sobre: rastro de fotos do DVD seguindo o cursor
+  (function trail() {
+    const box = $('[data-trail]'); const sec = $('.sobre');
+    if (!box || !fine || reduce) return;
+    const srcs = ['01', '02', '03', '04', '05', '06', '07', '08', '10', '13', '15', '16'].map((n) => `assets/img/palco-${n}.webp`);
+    let pool = null, k = 0, lx = 0, ly = 0, z = 1;
+    const build = () => { pool = srcs.map((s) => { const i = new Image(); i.src = s; i.alt = ''; i.decoding = 'async'; box.appendChild(i); return i; }); };
+    sec.addEventListener('pointermove', (e) => {
+      const r = sec.getBoundingClientRect(); const x = e.clientX - r.left, y = e.clientY - r.top;
+      if (!pool) { build(); lx = x; ly = y; return; }
+      if (Math.hypot(x - lx, y - ly) < 110) return;
+      lx = x; ly = y;
+      const img = pool[k++ % pool.length];
+      const w = img.offsetWidth || 220, h = w * 0.625;
+      gsap.killTweensOf(img);
+      gsap.set(img, { x: x - w / 2, y: y - h / 2, zIndex: z++, opacity: 1, scale: 0.6, rotate: 0 });
+      gsap.timeline().to(img, { scale: 1, duration: 0.5, ease: 'expo.out' }).to(img, { opacity: 0, scale: 0.85, duration: 0.7, ease: 'power2.in' }, 0.55);
+    });
+  })();
+
+  // números: equalizador gigante que reage à música
+  (function eqBars() {
+    const box = $('[data-eq]'); if (!box) return;
+    const N = innerWidth < 700 ? 28 : 64;
+    box.innerHTML = '<i></i>'.repeat(N);
+    const bars = $$('i', box);
+    if (reduce) return;
+    let vis = false;
+    new IntersectionObserver(([e]) => (vis = e.isIntersecting)).observe(box);
+    gsap.ticker.add((t) => {
+      if (!vis) return;
+      const lv = music.playing ? music.levels(N / 2) : null;
+      bars.forEach((b, i) => {
+        const j = i < N / 2 ? N / 2 - 1 - i : i - N / 2;
+        const v = lv ? 0.08 + lv[j] * 0.95 : 0.1 + 0.08 * (Math.sin(t * 2.2 + i * 0.45) + 1) + 0.05 * Math.sin(t * 5.3 + i);
+        b.style.transform = `scaleY(${v.toFixed(3)})`;
+      });
+    });
+  })();
+
+  // frases do "sobre" inclinam com a velocidade do scroll
+  if (!reduce) {
+    const lines = $$('.line');
+    const skewTo = lines.map((l) => gsap.quickTo(l, 'skewX', { duration: 0.6, ease: 'power3' }));
+    let sobreVis = false; new IntersectionObserver(([e]) => (sobreVis = e.isIntersecting)).observe($('.sobre'));
+    gsap.ticker.add(() => { if (!sobreVis) return; const v = clamp(-scrollVel / 380, -7, 7); skewTo.forEach((f) => f(v)); });
+  }
+
 
   /* =========================================================
      SOBRE: frases enormes que correm com o scroll, com vídeo no meio
@@ -547,10 +787,23 @@
       const media = card.querySelector('.card__media');
       if (!media) return;
       gsap.fromTo(media, { xPercent: -6 }, { xPercent: 6, ease: 'none', scrollTrigger: { trigger: card, containerAnimation: tween, start: 'left right', end: 'right left', scrub: true } });
-      gsap.from(card, { y: 50, opacity: 0, duration: 1.2, scrollTrigger: { trigger: card, containerAnimation: tween, start: 'left 95%' } });
     });
     gsap.from('.faixas__head > p', { y: 24, opacity: 0, duration: 1.2, scrollTrigger: { trigger: '.faixas', start: 'top 70%' } });
-    return () => {};
+    // coverflow: o card do centro ganha destaque, os outros recuam e escurecem
+    const cards = $$('.card', track);
+    const cf = () => {
+      const cx = innerWidth / 2;
+      cards.forEach((c) => {
+        const r = c.getBoundingClientRect(); if (r.right < -200 || r.left > innerWidth + 200) return;
+        const d = clamp(Math.abs(r.left + r.width / 2 - cx) / (innerWidth * 0.55), 0, 1);
+        c.style.transform = `scale(${(1 - d * 0.12).toFixed(3)})`;
+        c.style.setProperty('--dim', (d * 0.55).toFixed(3));
+      });
+    };
+    let cfOn = false; ScrollTrigger.create({ trigger: '.faixas', start: 'top bottom', end: 'bottom top', onToggle: (st) => (cfOn = st.isActive) });
+    const cfTick = () => cfOn && cf();
+    gsap.ticker.add(cfTick);
+    return () => { gsap.ticker.remove(cfTick); cards.forEach((c) => { c.style.transform = ''; c.style.removeProperty('--dim'); }); };
   });
 
   // evita que o foco por teclado role o trilho por dentro e desalinhe o GSAP
@@ -686,34 +939,32 @@
   })();
 
   /* =========================================================
-     EXPERIÊNCIAS: lista com foto que segue o cursor
+     FORMATOS: cards que se empilham no scroll
      ========================================================= */
-  (function experiencias() {
-    const list = $('[data-exp]');
-    const float = $('[data-exp-float]');
-    const fimg = $('[data-exp-float-img]');
-    if (fine && !reduce) {
-      const fx = gsap.quickTo(float, 'x', { duration: 0.7, ease: 'power3' });
-      const fy = gsap.quickTo(float, 'y', { duration: 0.7, ease: 'power3' });
-      gsap.set(float, { x: -9999, y: -9999 });
-      let placed = false;
-      list.addEventListener('pointermove', (e) => {
-        const tx = e.clientX - float.offsetWidth * 0.5, ty = e.clientY - float.offsetHeight * 0.55;
-        if (!placed) { gsap.set(float, { x: tx, y: ty }); placed = true; }
-        fx(tx); fy(ty);
-        const row = e.target.closest('.exp__row');
-        if (row) { if (!fimg.src.endsWith(row.dataset.img)) fimg.src = row.dataset.img; float.classList.add('is-on'); }
-        else float.classList.remove('is-on');
-      });
-      list.addEventListener('pointerleave', () => { float.classList.remove('is-on'); placed = false; });
-    }
-    if (!reduce) {
-      $$('.exp__row', list).forEach((row, k) => {
-        gsap.from(row.querySelector('.exp__name'), { yPercent: 100, opacity: 0, duration: 1.2, ease: 'expo.out', scrollTrigger: { trigger: row, start: 'top 90%' } });
-        gsap.from(row.querySelector('.exp__desc'), { opacity: 0, y: 16, duration: 1.2, ease: 'expo.out', delay: 0.1, scrollTrigger: { trigger: row, start: 'top 90%' } });
-      });
-      gsap.from('.exp__head > p', { y: 24, opacity: 0, duration: 1.2, scrollTrigger: { trigger: '.exp', start: 'top 75%' } });
-    }
+  (function stack() {
+    const cards = $$('.stack__card');
+    if (reduce) return;
+    cards.forEach((card, i) => {
+      const shade = document.createElement('span'); shade.className = 'stack__shade'; card.appendChild(shade);
+      const img = card.querySelector('.stack__img');
+      gsap.fromTo(img, { scale: 1.18 }, { scale: 1, ease: 'none', scrollTrigger: { trigger: card, start: 'top bottom', end: 'top 20%', scrub: true } });
+      const name = card.querySelector('.stack__name');
+      gsap.from(name, { yPercent: 60, opacity: 0, duration: 1.2, ease: 'expo.out', scrollTrigger: { trigger: card, start: 'top 65%' } });
+      gsap.from(card.querySelectorAll('.stack__meta, .stack__desc, .btn'), { y: 24, opacity: 0, duration: 1, stagger: 0.08, ease: 'expo.out', scrollTrigger: { trigger: card, start: 'top 60%' } });
+      const nxt = cards[i + 1];
+      if (!nxt) return;
+      gsap.timeline({ scrollTrigger: { trigger: nxt, start: 'top bottom', end: 'top 15%', scrub: true } })
+        .to(card, { scale: 0.9, ease: 'none' }, 0)
+        .to(shade, { opacity: 0.6, ease: 'none' }, 0);
+    });
+    gsap.from('.exp__head > p', { y: 24, opacity: 0, duration: 1.2, scrollTrigger: { trigger: '.exp', start: 'top 75%' } });
+    // foco por teclado: leva o card para a posição natural (o próximo card sticky não cobre o botão)
+    $('[data-stack]').addEventListener('focusin', (e) => {
+      const card = e.target.closest('.stack__card'); if (!card) return;
+      let y = 0, el = card; while (el) { y += el.offsetTop; el = el.offsetParent; }
+      const top = y - (parseFloat(getComputedStyle(card).top) || 0);
+      lenis ? lenis.scrollTo(top, { immediate: true }) : scrollTo(0, top);
+    });
   })();
 
   /* =========================================================
@@ -764,6 +1015,12 @@
      CONTRATAÇÃO: pedido em 3 etapas com prévia da mensagem
      ========================================================= */
   const cta = $('[data-cta]');
+  const curtain = $('[data-curtain]');
+  if (curtain && !reduce) {
+    gsap.timeline({ scrollTrigger: { trigger: cta, start: 'top 85%', end: 'top -20%', scrub: 0.6 } })
+      .fromTo(curtain, { scaleY: 1 }, { scaleY: 0, ease: 'power2.inOut' }, 0)
+      .fromTo('.curtain span', { yPercent: 0 }, { yPercent: -60, ease: 'none' }, 0);
+  } else if (curtain) curtain.remove();
   if (fine) cta.addEventListener('pointermove', (e) => {
     const r = cta.getBoundingClientRect();
     cta.style.setProperty('--sx', `${e.clientX - r.left}px`);

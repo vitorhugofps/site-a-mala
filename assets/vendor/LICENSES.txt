@@ -116,5 +116,8 @@ This license is copied below, and is also available with a FAQ at:
 http://scripts.sil.org/OFL
 (SIL Open Font License 1.1 — texto completo acima)
 
+== Anton e JetBrains Mono (fontes) ==
+SIL Open Font License 1.1 — Copyright 2020 The Anton Project Authors (https://github.com/googlefonts/AntonFont); Copyright 2020 The JetBrains Mono Project Authors (https://github.com/JetBrains/JetBrainsMono)
+
 == Archivo (fontes) ==
 SIL Open Font License 1.1 — Copyright The Archivo Project Authors (https://github.com/Omnibus-Type/Archivo)
