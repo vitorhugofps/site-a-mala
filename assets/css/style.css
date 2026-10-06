@@ -467,6 +467,7 @@ dialog::backdrop { background: rgba(6,6,8,.92); backdrop-filter: blur(8px); }
   .hero { height: 280vh; }
   .hero__title { font-size: clamp(44px, 13vw, 76px); }
   .badge { width: 84px; top: calc(var(--nav-h) + 2vh); bottom: auto; }
+  .hero__cue { bottom: calc(4vh + 78px); }
   .sobre__foot { grid-template-columns: 1fr; }
   .setlist__head, .exp__head { grid-template-columns: 1fr; }
   .setlist__head p, .exp__head p { justify-self: start; }
