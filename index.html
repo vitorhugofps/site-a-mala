@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Maria Laís (A Mala) — DVD Mais ou Menos Assim, shows e contratação</title>
+  <title>Maria Laís (A Mala): DVD Mais ou Menos Assim, shows e contratação</title>
   <meta name="description" content="Site oficial da cantora Maria Laís, A Mala. Assista ao DVD Mais ou Menos Assim, ouça as faixas e contrate shows, eventos privados e ações para marcas.">
-  <meta name="theme-color" content="#060608">
+  <meta name="theme-color" content="#070b14">
   <link rel="canonical" href="https://marialais.com.br/">
   <link rel="icon" type="image/png" href="assets/img/favicon.png">
   <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
@@ -13,7 +13,7 @@
   <meta property="og:type" content="website">
   <meta property="og:locale" content="pt_BR">
   <meta property="og:url" content="https://marialais.com.br/">
-  <meta property="og:title" content="Maria Laís (A Mala) — DVD Mais ou Menos Assim">
+  <meta property="og:title" content="Maria Laís (A Mala): DVD Mais ou Menos Assim">
   <meta property="og:description" content="Assista ao DVD, ouça as faixas e leve a Mala para o seu palco.">
   <meta property="og:image" content="https://marialais.com.br/assets/img/og-image.jpg">
   <meta property="og:image:width" content="1200">
@@ -51,10 +51,9 @@
   }
   </script>
 
-  <link rel="preload" as="font" type="font/woff2" href="assets/fonts/anton-latin-400-normal.woff2" crossorigin>
-  <link rel="preload" as="font" type="font/woff2" href="assets/fonts/archivo-latin-wdth-normal.woff2" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="assets/fonts/geist-latin-wght-normal.woff2" crossorigin>
   <link rel="preload" as="image" href="assets/img/intro-poster.jpg">
-  <link rel="stylesheet" href="assets/css/style.css?v=9">
+  <link rel="stylesheet" href="assets/css/style.css?v=11">
 </head>
 <body>
   <a class="skip" href="#sobre">Pular a abertura</a>
@@ -97,7 +96,7 @@
 
     <!-- 1. ABERTURA: a logo em violão mostra o vídeo por dentro e se abre no scroll -->
     <section class="hero" id="abertura" aria-label="Abertura">
-      <div class="hero__stage">
+      <div class="hero__stage" data-listen data-cursor="Ouvir">
         <div class="hero__halo" data-hero-halo>
           <div class="hero__mask" data-hero-mask>
             <video class="hero__video" data-intro muted playsinline loop autoplay preload="auto" poster="assets/img/intro-poster.jpg"
@@ -109,17 +108,16 @@
 
         <div class="hero__cue" data-hero-cue aria-hidden="true">
           <span class="hero__cue-line"></span>
-          <span>Role para entrar no show</span>
+          <span class="hero__cue-txt only-touch">Toque no vídeo para ouvir</span>
         </div>
 
         <div class="hero__copy" data-hero-copy>
-          <p class="hero__kicker label label--rule"><span class="live-dot" aria-hidden="true"></span>Ao vivo, gravado em 4K</p>
+          <p class="hero__kicker pill"><span class="live-dot" aria-hidden="true"></span>Ao vivo, gravado em 4K</p>
           <h1 class="hero__title" data-play-type>A voz de uma <em>nova geração</em></h1>
           <div class="hero__foot">
             <p>Sertanejo, sofrência e modão de Uberlândia para o Brasil.</p>
             <div class="hero__actions">
-              <button class="btn btn--accent" type="button" data-sound-toggle><span class="eqmini" aria-hidden="true"><i></i><i></i><i></i></span><span data-sound-label>Ligar o som</span></button>
-              <button class="btn btn--ghost" type="button" data-yt="IL7bzaJbU4o" data-yt-title="Mais ou Menos Assim, DVD completo">Assistir ao DVD</button>
+              <button class="btn btn--accent" type="button" data-yt="IL7bzaJbU4o" data-yt-title="Mais ou Menos Assim, DVD completo">Assistir ao DVD</button>
             </div>
           </div>
         </div>
@@ -127,14 +125,9 @@
       </div>
     </section>
 
-    <!-- letreiro: transição -->
-    <div class="bands" aria-hidden="true">
-      <div class="band"><div class="band__track" data-band="-1"><span>Traumatizou</span><i></i><span>Reinicia</span><i></i><span>Camas Avulsas</span><i></i><span>Deu Bom Demais</span><i></i><span>Evidências</span><i></i><span>Nuvem de Lágrimas</span><i></i><span>Disk Me</span><i></i><span>Mais ou Menos Assim</span><i></i></div></div>
-    </div>
 
     <!-- 2. SOBRE: frases grandes com vídeo dentro do texto -->
     <section class="sobre" id="sobre" aria-labelledby="sobre-titulo">
-      <span class="corner" aria-hidden="true" data-scramble>02 — A Mala</span><span class="corner corner--r" aria-hidden="true" data-scramble>Uberlândia, MG · desde 2023</span>
       <h2 id="sobre-titulo" class="sr">Quem é a Mala</h2>
       <div class="trail" data-trail aria-hidden="true"></div>
       <div class="sobre__lines">
@@ -146,29 +139,50 @@
         <p class="sobre__quote">“A música sempre foi a minha forma mais verdadeira de me expressar. Mais do que cantar, eu gosto de entregar sentimento.”</p>
         <div class="sobre__side">
           <p class="sobre__body">Maria Laís cresceu entre bateria, violão e canto, fez dupla sertaneja e, em 2023, virou A Mala: cantando modão em botecos de Uberlândia e Araguari até as redes inteiras cantarem junto. O repertório mistura sertanejo moderno, clássicos da sofrência e modões que atravessam gerações.</p>
-          <p class="sobre__sign"><span class="sobre__wm">A Mala</span><span>Maria Laís</span></p>
+          <p class="sobre__sign"><span class="sobre__wm" role="img" aria-label="A Mala"></span><span>Maria Laís</span></p>
         </div>
       </div>
     </section>
 
     <!-- 3. NÚMEROS -->
-    <section class="numeros" aria-label="A Mala em números">
-      <span class="corner" aria-hidden="true" data-scramble>03 — Números</span><span class="corner corner--r" aria-hidden="true" data-scramble>Fonte: redes oficiais</span>
-      <div class="numeros__eq" data-eq aria-hidden="true"></div>
-      <ul class="numeros__grid">
-        <li class="num"><strong><span class="p">+</span><span data-count="3">0</span><span class="u">mi</span></strong><span>seguidores nas redes</span></li>
-        <li class="num"><strong><span class="p">+</span><span data-count="100">0</span><span class="u">mi</span></strong><span>visualizações</span></li>
-        <li class="num"><strong><span data-count="10">0</span></strong><span>faixas no DVD, quatro delas inéditas</span></li>
-        <li class="num"><strong><span data-count="41">0</span><span class="u">min</span></strong><span>de show gravado ao vivo</span></li>
-      </ul>
+    <section class="numeros" id="numeros" aria-label="A Mala em números">
+      <div class="bento" data-bento>
+        <article class="cell cell--a" data-spot>
+          <div class="cell__in">
+            <img class="cell__bg" src="assets/img/palco-06.webp" alt="" loading="lazy" width="1800" height="1012">
+            <p class="cell__k">Seguidores nas redes</p>
+            <p class="cell__n"><span class="p">+</span><span data-count="3">3</span><span class="u">mi</span></p>
+            <p class="cell__s">Instagram, TikTok e YouTube. Uma comunidade que canta junto em cada vídeo.</p>
+            <a class="btn btn--glass btn--small" href="https://www.instagram.com/amalacanta/" target="_blank" rel="noopener">Seguir @amalacanta</a>
+          </div>
+        </article>
+        <article class="cell cell--b" data-spot data-cell-video>
+          <div class="cell__in">
+            <video class="cell__bg" muted playsinline loop preload="none" poster="assets/img/card-traumatizou.webp" data-src="assets/video/prev-traumatizou.mp4" aria-hidden="true"></video>
+            <p class="cell__k">Visualizações</p>
+            <p class="cell__n"><span class="p">+</span><span data-count="100">100</span><span class="u">mi</span></p>
+            <p class="cell__s">Traumatizou é a mais vista do DVD.</p>
+            <button class="btn btn--glass btn--small" type="button" data-yt="JVUZTIIwIx4" data-yt-title="Traumatizou">Assistir Traumatizou</button>
+          </div>
+        </article>
+        <article class="cell cell--d" data-spot>
+          <div class="cell__in">
+            <div class="cell__top">
+              <div><p class="cell__k">O show inteiro</p><p class="cell__s">Dez faixas, quatro inéditas, em 41 minutos ao vivo. Passe o cursor e escolha por onde começar.</p></div>
+              <div class="cell__pair"><p class="cell__n cell__n--sm"><span data-count="10">10</span><span class="u">faixas</span></p><p class="cell__n cell__n--sm"><span data-count="41">41</span><span class="u">min</span></p></div>
+            </div>
+            <div class="strip" data-strip role="list" aria-label="Faixas do DVD"></div>
+            <div class="cell__row"><p class="cell__read" data-strip-read><b>00:00</b> Esse Amor que me Mata / Não Olhe Assim / Antes de Voltar pra Casa</p><span class="cell__hint">Clique para assistir a partir daí</span></div>
+          </div>
+        </article>
+      </div>
     </section>
 
     <!-- 4. O DVD -->
     <section class="dvd" id="dvd" aria-label="O DVD Mais ou Menos Assim">
       <div class="dvd__pin">
-        <span class="corner" aria-hidden="true" data-scramble>04 — O DVD</span><span class="corner corner--r" aria-hidden="true" data-scramble>P10 Records · maio de 2026</span>
         <h2 class="dvd__title"><span data-dvd-l>O DVD que</span> <span data-dvd-r><em>você vai sentir</em></span></h2>
-        <div class="dvd__frame" data-dvd-frame>
+        <div class="dvd__frame" data-dvd-frame data-listen data-cursor="Ouvir">
           <video data-lazy-video muted playsinline loop preload="none" poster="assets/img/dvd-poster-v4.jpg" data-src="assets/video/dvd-destaque-v4.mp4" aria-hidden="true"></video>
           <div class="dvd__overlay" data-dvd-info>
             <p class="dvd__album">Mais ou Menos Assim</p>
@@ -191,7 +205,6 @@
     <!-- 5. FAIXAS MAIS ASSISTIDAS -->
     <section class="faixas" id="faixas" aria-labelledby="faixas-titulo">
       <div class="faixas__pin">
-        <span class="corner" aria-hidden="true" data-scramble>05 — Mais assistidas</span><span class="corner corner--r" aria-hidden="true" data-scramble>Ordem: views no YouTube</span>
         <header class="faixas__head sec-head">
           <h2 id="faixas-titulo" data-play-type>As mais assistidas</h2>
           <p>Em ordem de visualizações no canal <a href="https://www.youtube.com/@amalacanta" target="_blank" rel="noopener">@amalacanta</a>. Escolha uma faixa e assista aqui mesmo.</p>
@@ -255,12 +268,11 @@
 
     <!-- 7. EXPERIÊNCIAS: lista com imagem que segue o cursor -->
     <section class="exp" id="experiencias" aria-label="Formatos de show">
-      <span class="corner" aria-hidden="true" data-scramble>06 — Formatos</span><span class="corner corner--r" aria-hidden="true" data-scramble>Todo o Brasil</span>
       <div class="stack" data-stack>
         <article class="stack__card">
           <img class="stack__img" src="assets/img/palco-07.webp" alt="" loading="lazy" width="1800" height="1012">
           <div class="stack__body">
-            <p class="stack__meta"><span>01 / 06</span><span>Intimista</span></p>
+            <p class="stack__meta"><span>Intimista</span></p>
             <h3 class="stack__name">Mala Móvel</h3>
             <p class="stack__desc">Palco intimista onde você estiver: chego com a mala vintage e o equipamento completo.</p>
             <a class="btn btn--accent" href="#contratar" data-wa="Quero o projeto Mala Móvel" data-magnetic>Pedir este formato</a>
@@ -269,7 +281,7 @@
         <article class="stack__card">
           <img class="stack__img" src="assets/img/palco-06.webp" alt="" loading="lazy" width="1800" height="1012">
           <div class="stack__body">
-            <p class="stack__meta"><span>02 / 06</span><span>Casa, empresa, evento</span></p>
+            <p class="stack__meta"><span>Casa, empresa, evento</span></p>
             <h3 class="stack__name">Boteco Delivery</h3>
             <p class="stack__desc">O clima do boteco na sua casa, empresa ou evento, com o modão que todo mundo canta junto.</p>
             <a class="btn btn--accent" href="#contratar" data-wa="Quero o projeto Boteco Delivery" data-magnetic>Pedir este formato</a>
@@ -278,7 +290,7 @@
         <article class="stack__card">
           <img class="stack__img" src="assets/img/palco-05.webp" alt="" loading="lazy" width="1800" height="1012">
           <div class="stack__body">
-            <p class="stack__meta"><span>03 / 06</span><span>Sob medida</span></p>
+            <p class="stack__meta"><span>Sob medida</span></p>
             <h3 class="stack__name">Eventos privados</h3>
             <p class="stack__desc">Casamentos, aniversários, formaturas e confraternizações com repertório sob medida.</p>
             <a class="btn btn--accent" href="#contratar" data-wa="Quero um show para um evento privado" data-magnetic>Pedir este formato</a>
@@ -287,7 +299,7 @@
         <article class="stack__card">
           <img class="stack__img" src="assets/img/palco-10.webp" alt="" loading="lazy" width="1800" height="1012">
           <div class="stack__body">
-            <p class="stack__meta"><span>04 / 06</span><span>Praça e palco aberto</span></p>
+            <p class="stack__meta"><span>Praça e palco aberto</span></p>
             <h3 class="stack__name">Prefeituras</h3>
             <p class="stack__desc">Festas de cidade, aniversários de município e datas comemorativas, para o público de praça cantar junto.</p>
             <a class="btn btn--accent" href="#contratar" data-wa="Quero um show para uma prefeitura" data-magnetic>Pedir este formato</a>
@@ -296,7 +308,7 @@
         <article class="stack__card">
           <img class="stack__img" src="assets/img/palco-02.webp" alt="" loading="lazy" width="1800" height="1012">
           <div class="stack__body">
-            <p class="stack__meta"><span>05 / 06</span><span>Palco grande</span></p>
+            <p class="stack__meta"><span>Palco grande</span></p>
             <h3 class="stack__name">Feiras e festivais</h3>
             <p class="stack__desc">Exposições, rodeios, feiras agropecuárias e festivais, com show pensado para palco grande.</p>
             <a class="btn btn--accent" href="#contratar" data-wa="Quero um show para uma feira ou festival" data-magnetic>Pedir este formato</a>
@@ -305,7 +317,7 @@
         <article class="stack__card">
           <img class="stack__img" src="assets/img/palco-03.webp" alt="" loading="lazy" width="1800" height="1012">
           <div class="stack__body">
-            <p class="stack__meta"><span>06 / 06</span><span>Empresas e marcas</span></p>
+            <p class="stack__meta"><span>Empresas e marcas</span></p>
             <h3 class="stack__name">Corporativo e marcas</h3>
             <p class="stack__desc">Convenções, confraternizações de empresa e ações de marca, com conteúdo para redes de uma artista acompanhada por milhões.</p>
             <a class="btn btn--accent" href="#contratar" data-wa="Quero um show corporativo ou ação de marca" data-magnetic>Pedir este formato</a>
@@ -316,7 +328,6 @@
 
     <!-- 9. GALERIA -->
     <section class="galeria" id="galeria" aria-labelledby="galeria-titulo">
-      <span class="corner" aria-hidden="true" data-scramble>07 — Galeria</span><span class="corner corner--r" aria-hidden="true" data-scramble>Frames do DVD em 4K</span>
       <header class="galeria__head sec-head">
         <h2 id="galeria-titulo" class="galeria__title" data-play-type>Por dentro do palco</h2>
         <p>Momentos do DVD gravado em 4K. Clique para ver em tela cheia.</p>
@@ -329,7 +340,6 @@
 
     <!-- 11. COMUNIDADE -->
     <section class="social" aria-labelledby="social-titulo">
-      <span class="corner" aria-hidden="true" data-scramble>08 — Redes</span><span class="corner corner--r" aria-hidden="true" data-scramble>+3 mi seguidores</span>
       <h2 id="social-titulo" class="social__handle" ><span class="at">@</span>amalacanta</h2>
       <p class="social__lead">Bastidores, modão e surpresas todos os dias para mais de 3 milhões de pessoas.</p>
       <ul class="social__links">
@@ -343,7 +353,6 @@
 
     <!-- 12. CONTRATAÇÃO -->
     <section class="cta" id="contratar" aria-labelledby="cta-titulo" data-cta>
-      <span class="corner" aria-hidden="true" data-scramble>09 — Contratar</span><span class="corner corner--r" aria-hidden="true" data-scramble>Agenciamento GIBSON</span>
       <video class="cta__bg" data-lazy-video muted playsinline loop preload="none" poster="assets/img/cta-poster.jpg" data-src="assets/video/cta-fundo.mp4" aria-hidden="true"></video>
       <div class="cta__spot" aria-hidden="true"></div>
       <div class="cta__wrap">
@@ -413,7 +422,7 @@
   </main>
 
   <footer class="footer">
-    <p class="footer__wm" aria-label="A Mala">A Mala</p>
+    <div class="footer__wm" role="img" aria-label="A Mala"></div>
     <div class="footer__cols">
       <div>
         <h3>Contratação</h3>
@@ -511,6 +520,6 @@
   <script src="assets/vendor/ScrollTrigger.min.js"></script>
   <script src="assets/vendor/SplitText.min.js"></script>
   <script src="assets/vendor/lenis.min.js"></script>
-  <script src="assets/js/main.js?v=9"></script>
+  <script src="assets/js/main.js?v=11"></script>
 </body>
 </html>

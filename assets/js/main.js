@@ -120,6 +120,20 @@
     });
   })();
 
+  /* botões com ícone interno (botão dentro do botão) */
+  const ARROW = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11 11 5M6 5h5v5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  const PLAY = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 4.5v7l5.5-3.5z" fill="currentColor"/></svg>';
+  $$('.btn').forEach((b) => {
+    if (b.querySelector('.btn__i') || b.matches('[data-back]')) return;
+    const span = document.createElement('span'); span.className = 'btn__i'; span.innerHTML = b.hasAttribute('data-yt') ? PLAY : ARROW;
+    b.appendChild(span); b.classList.add('has-i');
+  });
+  // brilho do vidro segue o cursor dentro do botão
+  if (matchMedia('(hover: hover)').matches) document.addEventListener('pointermove', (e) => {
+    const b = e.target.closest && e.target.closest('.btn'); if (!b) return;
+    const r = b.getBoundingClientRect(); b.style.setProperty('--bx', `${e.clientX - r.left}px`); b.style.setProperty('--by', `${e.clientY - r.top}px`);
+  }, { passive: true });
+
   /* =========================================================
      Cursor e botões magnéticos
      ========================================================= */
@@ -129,10 +143,12 @@
     const label = $('.cursor__label');
     const xTo = gsap.quickTo(cur, 'x', { duration: 0.35, ease: 'power3' });
     const yTo = gsap.quickTo(cur, 'y', { duration: 0.35, ease: 'power3' });
-    addEventListener('pointermove', (e) => { xTo(e.clientX); yTo(e.clientY); }, { passive: true });
+    addEventListener('pointermove', (e) => { xTo(e.clientX); yTo(e.clientY); if (!cur.classList.contains('is-on')) { gsap.set(cur, { x: e.clientX, y: e.clientY }); cur.classList.add('is-on'); } }, { passive: true });
+    document.addEventListener('pointerleave', () => cur.classList.remove('is-on'));
     document.addEventListener('pointerover', (e) => {
-      const lab = e.target.closest('[data-cursor]');
-      const link = e.target.closest('a, button, [role="button"], label');
+      const near = e.target.closest('a, button, [role="button"], label, input, [data-cursor]');
+      const lab = near && near.hasAttribute('data-cursor') ? near : null;
+      const link = near && !lab ? near : null;
       cur.classList.toggle('is-label', !!lab);
       label.textContent = lab ? lab.dataset.cursor : '';
       cur.classList.toggle('is-link', !lab && !!link);
@@ -173,7 +189,7 @@
   const menuBtn = $('[data-menu-toggle]');
   let menuOpen = false;
   const behindMenu = () => ['.skip', 'main', 'footer', '[data-dock]', '.wa-float', '.nav__logo', '.nav__cta'].map((q) => $(q)).filter(Boolean);
-  function closeMenu() { if (!menuOpen) return; menuOpen = false; menu.hidden = true; menuBtn.querySelector('.sr').textContent = 'Abrir menu'; behindMenu().forEach((el) => (el.inert = false)); menuBtn.setAttribute('aria-expanded', 'false'); lenis && lenis.start(); }
+  function closeMenu() { if (!menuOpen) return; menuOpen = false; menu.hidden = true; menuBtn.querySelector('.sr').textContent = 'Abrir menu'; behindMenu().forEach((el) => (el.inert = false)); const nl = $('.nav__logo'); nl.inert = nl.classList.contains('is-hidden'); menuBtn.setAttribute('aria-expanded', 'false'); lenis && lenis.start(); }
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && menuOpen) { closeMenu(); menuBtn.focus(); } });
   menuBtn.addEventListener('click', () => {
     menuOpen = !menuOpen;
@@ -418,8 +434,7 @@
       const on = wanted && !el.paused;
       dock.classList.toggle('is-playing', wanted);
       document.body.classList.toggle('is-sound', wanted);
-      $$('[data-sound-label]').forEach((l) => (l.textContent = wanted ? 'Som ligado' : 'Ligar o som'));
-      $$('[data-sound-toggle]').forEach((b) => b.setAttribute('aria-pressed', String(wanted)));
+      document.dispatchEvent(new CustomEvent('music:state'));
       playBtn.setAttribute('aria-label', wanted ? 'Pausar música' : 'Tocar música');
       if (on) loop();
     }
@@ -455,7 +470,7 @@
       const draw = () => {
         const lv = levels(N);
         ctx2d.clearRect(0, 0, W, H);
-        ctx2d.fillStyle = '#ffc531';
+        ctx2d.fillStyle = '#8fb4ea';
         const bw = W / N;
         for (let i = 0; i < N; i++) {
           const h = Math.max(2, (analyser ? lv[i] : 0.15 + 0.1 * Math.sin(performance.now() / 300 + i)) * H);
@@ -489,23 +504,35 @@
   });
 
   /* =========================================================
-     SOM: liga sozinho no primeiro toque/tecla (o navegador exige um gesto)
+     SOM: liga com o cursor sobre o vídeo do DVD (abertura e seção do DVD).
+     O navegador só libera áudio depois de um gesto: se a pessoa ainda não
+     clicou em nada, o cursor mostra "Ouvir" e o clique no vídeo liga o som.
      ========================================================= */
-  let userPaused = false;
-  const soundBtns = $$('[data-sound-toggle]');
-  soundBtns.forEach((b) => b.addEventListener('click', () => {
-    if (music.wanted) { userPaused = true; music.pause(); } else { userPaused = false; music.play(); }
-  }));
-  $('[data-dock-play]').addEventListener('click', () => { userPaused = music.wanted; }, true);
-  const autoEvents = ['pointerdown', 'keydown', 'touchend'];
-  function autoStart(e) {
-    if (e.type === 'keydown' && /^(Tab|Escape|Shift|Alt|Control|Meta)$/.test(e.key)) return;
-    if (e.target.closest && e.target.closest('[data-sound-toggle], [data-dock], [data-player], [data-yt]')) { off(); return; }
-    off();
-    if (!userPaused && !music.wanted) music.play();
+  document.addEventListener('music:state', () => syncListen && syncListen());
+  let userPaused = false, skipHover = false;
+  player.addEventListener('close', () => (skipHover = true));
+  const curLabel = $('.cursor__label');
+  const listenEls = $$('[data-listen]');
+  const activated = () => !!(navigator.userActivation && navigator.userActivation.hasBeenActive);
+  function syncListen() {
+    const txt = music.wanted ? 'Pausar' : 'Ouvir';
+    listenEls.forEach((el) => (el.dataset.cursor = txt));
+    const cur = $('.cursor');
+    if (cur && cur.classList.contains('is-label') && ['Ouvir', 'Pausar'].includes(curLabel.textContent)) curLabel.textContent = txt;
   }
-  function off() { autoEvents.forEach((t) => removeEventListener(t, autoStart, true)); }
-  autoEvents.forEach((t) => addEventListener(t, autoStart, true));
+  listenEls.forEach((el) => {
+    el.addEventListener('pointerleave', () => (skipHover = false));
+    el.addEventListener('pointerenter', (e) => {
+      if (e.pointerType !== 'mouse' || skipHover) return;
+      if (!music.wanted && !userPaused && activated()) music.play().then(syncListen);
+    });
+    el.addEventListener('click', (e) => {
+      if (e.target.closest('a, button, input, label, [data-yt]')) return;
+      if (music.wanted) { userPaused = true; music.pause(); } else { userPaused = false; music.play(); }
+      setTimeout(syncListen, 60);
+    });
+  });
+  $('[data-dock-play]').addEventListener('click', () => { userPaused = music.wanted; setTimeout(syncListen, 60); }, true);
   introReady.then(() => setTimeout(() => $('[data-dock]').classList.add('is-visible'), reduce ? 0 : 900));
 
   /* pulso da música (0..1) em --beat: o logo da abertura respira no ritmo */
@@ -690,26 +717,6 @@
     });
   })();
 
-  // números: equalizador gigante que reage à música
-  (function eqBars() {
-    const box = $('[data-eq]'); if (!box) return;
-    const N = innerWidth < 700 ? 28 : 64;
-    box.innerHTML = '<i></i>'.repeat(N);
-    const bars = $$('i', box);
-    if (reduce) return;
-    let vis = false;
-    new IntersectionObserver(([e]) => (vis = e.isIntersecting)).observe(box);
-    gsap.ticker.add((t) => {
-      if (!vis) return;
-      const lv = music.playing ? music.levels(N / 2) : null;
-      bars.forEach((b, i) => {
-        const j = i < N / 2 ? N / 2 - 1 - i : i - N / 2;
-        const v = lv ? 0.08 + lv[j] * 0.95 : 0.1 + 0.08 * (Math.sin(t * 2.2 + i * 0.45) + 1) + 0.05 * Math.sin(t * 5.3 + i);
-        b.style.transform = `scaleY(${v.toFixed(3)})`;
-      });
-    });
-  })();
-
   // frases do "sobre" inclinam com a velocidade do scroll
   if (!reduce) {
     const lines = $$('.line');
@@ -740,21 +747,46 @@
   }
 
   /* =========================================================
-     NÚMEROS: contadores
+     NÚMEROS: grade interativa (contadores, luz que segue o cursor,
+     faixas do DVD e linha do tempo clicável)
      ========================================================= */
-  $$('.num').forEach((card, i) => {
-    const n = card.querySelector('[data-count]');
-    const end = +n.dataset.count;
-    if (reduce) { n.textContent = end; return; }
-    ScrollTrigger.create({
-      trigger: card, start: 'top 82%', once: true,
-      onEnter: () => {
-        const o = { v: 0 };
-        gsap.to(o, { v: end, duration: 2.2, delay: i * 0.12, ease: 'power3.out', onUpdate: () => (n.textContent = Math.round(o.v)) });
-        gsap.from(card.querySelector('strong'), { yPercent: 40, opacity: 0, duration: 1.4, delay: i * 0.1, ease: 'expo.out' });
-      }
+  (function numbers() {
+    const cells = $$('[data-spot]');
+    // contadores
+    cells.forEach((cell, i) => {
+      $$('[data-count]', cell).forEach((n, k) => { const end = +n.dataset.count; if (reduce) return;
+      ScrollTrigger.create({ trigger: cell, start: 'top 85%', once: true, onEnter: () => {
+        const o = { v: 0 }; n.textContent = '0';
+        gsap.to(o, { v: end, duration: 2, delay: 0.15 + i * 0.1 + k * 0.1, ease: 'power3.out', onUpdate: () => (n.textContent = Math.round(o.v)) });
+      } });
+      });
     });
-  });
+    if (!reduce) gsap.from(cells, { y: 60, opacity: 0, filter: 'blur(10px)', duration: 1.2, stagger: 0.1, ease: 'expo.out', scrollTrigger: { trigger: '[data-bento]', start: 'top 80%' } });
+    // luz na borda que segue o cursor
+    if (fine) $('[data-bento]').addEventListener('pointermove', (e) => {
+      cells.forEach((c) => { const r = c.getBoundingClientRect(); c.style.setProperty('--mx', `${e.clientX - r.left}px`); c.style.setProperty('--my', `${e.clientY - r.top}px`); });
+    });
+    // vídeo do card de visualizações
+    const vc = $('[data-cell-video]'); const vv = vc && vc.querySelector('video');
+    if (vv) {
+      const play = () => { if (!vv.src) vv.src = vv.dataset.src; vv.play().catch(() => {}); vc.classList.add('is-playing'); };
+      const stop = () => { vv.pause(); vc.classList.remove('is-playing'); };
+      if (fine) { vc.addEventListener('pointerenter', play); vc.addEventListener('pointerleave', stop); }
+      else new IntersectionObserver(([e]) => (e.intersectionRatio > 0.6 ? play() : stop()), { threshold: [0, 0.6] }).observe(vc);
+    }
+    // faixa de filme do DVD: cada faixa ocupa espaço pela duração, cresce no hover e abre o player no tempo certo
+    const strip = $('[data-strip]'), sread = $('[data-strip-read]');
+    if (strip) {
+      const IMG = ['esseamor', 'finalfeliz', 'deubom', 'voce', 'reinicia', 'televo', 'traumatizou', 'nuvem', 'camas', 'diskme'];
+      const ends = SETLIST.map((x, i) => (SETLIST[i + 1] ? SETLIST[i + 1].t : DVD_LEN));
+      strip.innerHTML = SETLIST.map((x, i) => `<button type="button" role="listitem" class="strip__seg${x.ined ? ' is-ined' : ''}" style="--d:${ends[i] - x.t}" data-yt="${DVD_ID}" data-start="${x.t}" data-yt-title="${x.title.replace(/"/g, '&quot;')}" aria-label="${fmt(x.t)}, ${x.title.replace(/"/g, '&quot;')}${x.ined ? ', inédita' : ''}"><img src="assets/img/card-${IMG[i]}.webp" alt="" loading="lazy"><span class="strip__t">${fmt(x.t)}</span></button>`).join('');
+      const segs = $$('.strip__seg', strip);
+      const show = (i) => { const x = SETLIST[i]; sread.innerHTML = `<b>${fmt(x.t)}</b> ${x.title}${x.ined ? ' <span class="tag">Inédita</span>' : ''}`; segs.forEach((el, j) => el.classList.toggle('is-on', j === i)); };
+      segs.forEach((el, i) => { el.addEventListener('pointerenter', () => show(i)); el.addEventListener('focus', () => show(i)); });
+      strip.addEventListener('pointerleave', () => segs.forEach((el) => el.classList.remove('is-on')));
+      if (!reduce) gsap.from(segs, { clipPath: 'inset(100% 0 0 0)', duration: 1.2, stagger: 0.06, ease: 'expo.out', scrollTrigger: { trigger: strip, start: 'top 90%' }, clearProps: 'clipPath' });
+    }
+  })();
 
   /* =========================================================
      DVD: quadro que cresce até a tela cheia
