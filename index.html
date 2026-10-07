@@ -54,7 +54,7 @@
   <link rel="preload" as="font" type="font/woff2" href="assets/fonts/anton-latin-400-normal.woff2" crossorigin>
   <link rel="preload" as="font" type="font/woff2" href="assets/fonts/archivo-latin-wdth-normal.woff2" crossorigin>
   <link rel="preload" as="image" href="assets/img/intro-poster.jpg">
-  <link rel="stylesheet" href="assets/css/style.css?v=8">
+  <link rel="stylesheet" href="assets/css/style.css?v=9">
 </head>
 <body>
   <a class="skip" href="#sobre">Pular a abertura</a>
@@ -87,7 +87,6 @@
       <a href="#sobre">A Mala</a>
       <a href="#dvd">O DVD</a>
       <a href="#faixas">Faixas</a>
-      <a href="#setlist">Setlist</a>
       <a href="#experiencias">Shows</a>
       <a href="#galeria">Galeria</a>
       <a href="#contratar">Contratar</a>
@@ -147,7 +146,7 @@
         <p class="sobre__quote">“A música sempre foi a minha forma mais verdadeira de me expressar. Mais do que cantar, eu gosto de entregar sentimento.”</p>
         <div class="sobre__side">
           <p class="sobre__body">Maria Laís cresceu entre bateria, violão e canto, fez dupla sertaneja e, em 2023, virou A Mala: cantando modão em botecos de Uberlândia e Araguari até as redes inteiras cantarem junto. O repertório mistura sertanejo moderno, clássicos da sofrência e modões que atravessam gerações.</p>
-          <p class="sobre__sign"><span class="sobre__wm" role="img" aria-label="A Mala"></span><span>Maria Laís</span></p>
+          <p class="sobre__sign"><span class="sobre__wm">A Mala</span><span>Maria Laís</span></p>
         </div>
       </div>
     </section>
@@ -254,33 +253,14 @@
       </div>
     </section>
 
-    <!-- 6. SETLIST INTERATIVO -->
-    <section class="setlist" id="setlist" aria-labelledby="setlist-titulo">
-      <span class="corner" aria-hidden="true" data-scramble>06 — Setlist</span><span class="corner corner--r" aria-hidden="true" data-scramble>41:14 de show</span>
-      <header class="setlist__head sec-head">
-        <h2 id="setlist-titulo" data-play-type>O show inteiro, <em>faixa a faixa</em></h2>
-        <p>Cada barra é um trecho dos 41 minutos do DVD. Toque ou passe o mouse para encontrar uma música e assista a partir dela.</p>
-      </header>
-      <div class="wave" data-wave>
-        <svg class="wave__svg" data-wave-svg role="img" aria-label="Linha do tempo do DVD com as dez faixas"></svg>
-        <div class="wave__head" data-wave-head aria-hidden="true"><span data-wave-time>00:00</span></div>
-        <div class="wave__tip" data-wave-tip aria-hidden="true"></div>
-      </div>
-      <ol class="setlist__list" data-setlist></ol>
-    </section>
-
     <!-- 7. EXPERIÊNCIAS: lista com imagem que segue o cursor -->
-    <section class="exp" id="experiencias" aria-labelledby="exp-titulo">
-      <span class="corner" aria-hidden="true" data-scramble>07 — Formatos</span><span class="corner corner--r" aria-hidden="true" data-scramble>Todo o Brasil</span>
-      <header class="exp__head sec-head">
-        <h2 id="exp-titulo" data-play-type>Onde a Mala chega, <em>vira palco</em></h2>
-        <p>Do boteco ao palco principal. Escolha um formato e fale direto com a equipe.</p>
-      </header>
+    <section class="exp" id="experiencias" aria-label="Formatos de show">
+      <span class="corner" aria-hidden="true" data-scramble>06 — Formatos</span><span class="corner corner--r" aria-hidden="true" data-scramble>Todo o Brasil</span>
       <div class="stack" data-stack>
         <article class="stack__card">
           <img class="stack__img" src="assets/img/palco-07.webp" alt="" loading="lazy" width="1800" height="1012">
           <div class="stack__body">
-            <p class="stack__meta"><span>01 / 05</span><span>Intimista</span></p>
+            <p class="stack__meta"><span>01 / 06</span><span>Intimista</span></p>
             <h3 class="stack__name">Mala Móvel</h3>
             <p class="stack__desc">Palco intimista onde você estiver: chego com a mala vintage e o equipamento completo.</p>
             <a class="btn btn--accent" href="#contratar" data-wa="Quero o projeto Mala Móvel" data-magnetic>Pedir este formato</a>
@@ -289,37 +269,46 @@
         <article class="stack__card">
           <img class="stack__img" src="assets/img/palco-06.webp" alt="" loading="lazy" width="1800" height="1012">
           <div class="stack__body">
-            <p class="stack__meta"><span>02 / 05</span><span>Casa, empresa, evento</span></p>
+            <p class="stack__meta"><span>02 / 06</span><span>Casa, empresa, evento</span></p>
             <h3 class="stack__name">Boteco Delivery</h3>
             <p class="stack__desc">O clima do boteco na sua casa, empresa ou evento, com o modão que todo mundo canta junto.</p>
             <a class="btn btn--accent" href="#contratar" data-wa="Quero o projeto Boteco Delivery" data-magnetic>Pedir este formato</a>
           </div>
         </article>
         <article class="stack__card">
-          <img class="stack__img" src="assets/img/palco-02.webp" alt="" loading="lazy" width="1800" height="1012">
-          <div class="stack__body">
-            <p class="stack__meta"><span>03 / 05</span><span>2 a 3 horas</span></p>
-            <h3 class="stack__name">Bares e casas</h3>
-            <p class="stack__desc">De 2 a 3 horas de show, da sofrência ao sertanejo moderno, com equipamento completo.</p>
-            <a class="btn btn--accent" href="#contratar" data-wa="Quero um show em bar ou casa de show" data-magnetic>Pedir este formato</a>
-          </div>
-        </article>
-        <article class="stack__card">
           <img class="stack__img" src="assets/img/palco-05.webp" alt="" loading="lazy" width="1800" height="1012">
           <div class="stack__body">
-            <p class="stack__meta"><span>04 / 05</span><span>Sob medida</span></p>
+            <p class="stack__meta"><span>03 / 06</span><span>Sob medida</span></p>
             <h3 class="stack__name">Eventos privados</h3>
             <p class="stack__desc">Casamentos, aniversários, formaturas e confraternizações com repertório sob medida.</p>
             <a class="btn btn--accent" href="#contratar" data-wa="Quero um show para um evento privado" data-magnetic>Pedir este formato</a>
           </div>
         </article>
         <article class="stack__card">
+          <img class="stack__img" src="assets/img/palco-10.webp" alt="" loading="lazy" width="1800" height="1012">
+          <div class="stack__body">
+            <p class="stack__meta"><span>04 / 06</span><span>Praça e palco aberto</span></p>
+            <h3 class="stack__name">Prefeituras</h3>
+            <p class="stack__desc">Festas de cidade, aniversários de município e datas comemorativas, para o público de praça cantar junto.</p>
+            <a class="btn btn--accent" href="#contratar" data-wa="Quero um show para uma prefeitura" data-magnetic>Pedir este formato</a>
+          </div>
+        </article>
+        <article class="stack__card">
+          <img class="stack__img" src="assets/img/palco-02.webp" alt="" loading="lazy" width="1800" height="1012">
+          <div class="stack__body">
+            <p class="stack__meta"><span>05 / 06</span><span>Palco grande</span></p>
+            <h3 class="stack__name">Feiras e festivais</h3>
+            <p class="stack__desc">Exposições, rodeios, feiras agropecuárias e festivais, com show pensado para palco grande.</p>
+            <a class="btn btn--accent" href="#contratar" data-wa="Quero um show para uma feira ou festival" data-magnetic>Pedir este formato</a>
+          </div>
+        </article>
+        <article class="stack__card">
           <img class="stack__img" src="assets/img/palco-03.webp" alt="" loading="lazy" width="1800" height="1012">
           <div class="stack__body">
-            <p class="stack__meta"><span>05 / 05</span><span>Experiência + conteúdo</span></p>
-            <h3 class="stack__name">Marcas</h3>
-            <p class="stack__desc">Experiências musicais e conteúdo para redes com uma artista acompanhada por milhões.</p>
-            <a class="btn btn--accent" href="#contratar" data-wa="Quero uma ação para a minha marca" data-magnetic>Pedir este formato</a>
+            <p class="stack__meta"><span>06 / 06</span><span>Empresas e marcas</span></p>
+            <h3 class="stack__name">Corporativo e marcas</h3>
+            <p class="stack__desc">Convenções, confraternizações de empresa e ações de marca, com conteúdo para redes de uma artista acompanhada por milhões.</p>
+            <a class="btn btn--accent" href="#contratar" data-wa="Quero um show corporativo ou ação de marca" data-magnetic>Pedir este formato</a>
           </div>
         </article>
       </div>
@@ -327,7 +316,7 @@
 
     <!-- 9. GALERIA -->
     <section class="galeria" id="galeria" aria-labelledby="galeria-titulo">
-      <span class="corner" aria-hidden="true" data-scramble>08 — Galeria</span><span class="corner corner--r" aria-hidden="true" data-scramble>Frames do DVD em 4K</span>
+      <span class="corner" aria-hidden="true" data-scramble>07 — Galeria</span><span class="corner corner--r" aria-hidden="true" data-scramble>Frames do DVD em 4K</span>
       <header class="galeria__head sec-head">
         <h2 id="galeria-titulo" class="galeria__title" data-play-type>Por dentro do palco</h2>
         <p>Momentos do DVD gravado em 4K. Clique para ver em tela cheia.</p>
@@ -340,7 +329,7 @@
 
     <!-- 11. COMUNIDADE -->
     <section class="social" aria-labelledby="social-titulo">
-      <span class="corner" aria-hidden="true" data-scramble>09 — Redes</span><span class="corner corner--r" aria-hidden="true" data-scramble>+3 mi seguidores</span>
+      <span class="corner" aria-hidden="true" data-scramble>08 — Redes</span><span class="corner corner--r" aria-hidden="true" data-scramble>+3 mi seguidores</span>
       <h2 id="social-titulo" class="social__handle" ><span class="at">@</span>amalacanta</h2>
       <p class="social__lead">Bastidores, modão e surpresas todos os dias para mais de 3 milhões de pessoas.</p>
       <ul class="social__links">
@@ -354,13 +343,11 @@
 
     <!-- 12. CONTRATAÇÃO -->
     <section class="cta" id="contratar" aria-labelledby="cta-titulo" data-cta>
-      <div class="curtain" data-curtain aria-hidden="true"><span>Leve a Mala</span></div>
-      <span class="corner" aria-hidden="true" data-scramble>10 — Contratar</span><span class="corner corner--r" aria-hidden="true" data-scramble>Agenciamento GIBSON</span>
+      <span class="corner" aria-hidden="true" data-scramble>09 — Contratar</span><span class="corner corner--r" aria-hidden="true" data-scramble>Agenciamento GIBSON</span>
       <video class="cta__bg" data-lazy-video muted playsinline loop preload="none" poster="assets/img/cta-poster.jpg" data-src="assets/video/cta-fundo.mp4" aria-hidden="true"></video>
       <div class="cta__spot" aria-hidden="true"></div>
       <div class="cta__wrap">
-        <h2 id="cta-titulo" class="cta__title" data-cta-title><span class="cta__l">Leve a Mala</span> <span class="cta__l">pro seu <em>palco.</em></span></h2>
-        <p class="cta__lead">Shows, eventos privados e ações para marcas em todo o Brasil. Monte o pedido em três passos e ele chega pronto no WhatsApp da equipe.</p>
+        <h2 id="cta-titulo" class="sr">Contratar show</h2>
         <form class="booking" data-booking novalidate aria-labelledby="booking-titulo">
           <div class="booking__head">
             <p id="booking-titulo" class="booking__title">Pedido de show</p>
@@ -372,10 +359,10 @@
             <fieldset class="booking__panel is-active" data-step="1">
               <legend>Que tipo de evento?</legend>
               <div class="tiles">
-                <label class="tile"><input type="radio" name="tipo" value="Show em bar ou casa de show" checked><strong>Bar ou casa de show</strong><small>De 2 a 3 horas de repertório</small></label>
-                <label class="tile"><input type="radio" name="tipo" value="Evento privado"><strong>Evento privado</strong><small>Casamento, aniversário, formatura</small></label>
-                <label class="tile"><input type="radio" name="tipo" value="Festa ou festival"><strong>Festa ou festival</strong><small>Palco grande, público aberto</small></label>
-                <label class="tile"><input type="radio" name="tipo" value="Ação para marca"><strong>Ação para marca</strong><small>Experiência e conteúdo</small></label>
+                <label class="tile"><input type="radio" name="tipo" value="Evento privado" checked><strong>Evento privado</strong><small>Casamento, aniversário, formatura</small></label>
+                <label class="tile"><input type="radio" name="tipo" value="Prefeitura"><strong>Prefeitura</strong><small>Festa de cidade, data comemorativa</small></label>
+                <label class="tile"><input type="radio" name="tipo" value="Feira ou festival"><strong>Feira ou festival</strong><small>Exposição, rodeio, palco grande</small></label>
+                <label class="tile"><input type="radio" name="tipo" value="Corporativo ou ação de marca"><strong>Corporativo e marcas</strong><small>Convenção, confraternização, ação</small></label>
                 <label class="tile"><input type="radio" name="tipo" value="Mala Móvel"><strong>Mala Móvel</strong><small>Palco intimista onde você estiver</small></label>
                 <label class="tile"><input type="radio" name="tipo" value="Boteco Delivery"><strong>Boteco Delivery</strong><small>O clima de boteco no seu evento</small></label>
               </div>
@@ -426,7 +413,7 @@
   </main>
 
   <footer class="footer">
-    <img class="footer__logo" src="assets/img/logo-branco.webp" alt="Maria Laís" width="1420" height="1069" loading="lazy">
+    <p class="footer__wm" aria-label="A Mala">A Mala</p>
     <div class="footer__cols">
       <div>
         <h3>Contratação</h3>
@@ -441,8 +428,10 @@
         <p><a href="https://www.instagram.com/amalacanta/" target="_blank" rel="noopener">Instagram</a>, <a href="https://www.tiktok.com/@amalacanta" target="_blank" rel="noopener">TikTok</a>, <a href="https://www.youtube.com/@amalacanta" target="_blank" rel="noopener">YouTube</a>, <a href="https://open.spotify.com/artist/2eUgXFsybV8AGGpuqTzS9u" target="_blank" rel="noopener">Spotify</a>, <a href="https://music.apple.com/us/album/a-mala-mais-ou-menos-assim-ao-vivo/6766958793" target="_blank" rel="noopener">Apple Music</a></p>
       </div>
     </div>
-    <div class="footer__wm" role="img" aria-label="A Mala"></div>
-    <p class="footer__legal">© 2026 Maria Laís. Todos os direitos reservados. Os vídeos são exibidos pelo YouTube, que pode usar cookies ao reproduzir.</p>
+    <div class="footer__base">
+      <img class="footer__logo" src="assets/img/logo-branco.webp" alt="Maria Laís" width="1420" height="1069" loading="lazy">
+      <p class="footer__legal">© 2026 Maria Laís. Todos os direitos reservados. Os vídeos são exibidos pelo YouTube, que pode usar cookies ao reproduzir.</p>
+    </div>
   </footer>
 
   <a class="wa-float" href="https://wa.me/5534984009272?text=Ol%C3%A1!%20Vim%20pelo%20site%20e%20quero%20contratar%20a%20Maria%20La%C3%ADs%20(A%20Mala)." target="_blank" rel="noopener" aria-label="Chamar no WhatsApp">
@@ -522,6 +511,6 @@
   <script src="assets/vendor/ScrollTrigger.min.js"></script>
   <script src="assets/vendor/SplitText.min.js"></script>
   <script src="assets/vendor/lenis.min.js"></script>
-  <script src="assets/js/main.js?v=8"></script>
+  <script src="assets/js/main.js?v=9"></script>
 </body>
 </html>

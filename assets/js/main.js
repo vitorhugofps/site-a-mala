@@ -835,110 +835,6 @@
   });
 
   /* =========================================================
-     SETLIST: onda sonora interativa
-     ========================================================= */
-  (function setlist() {
-    const wave = $('[data-wave]');
-    const svg = $('[data-wave-svg]');
-    const head = $('[data-wave-head]');
-    const time = $('[data-wave-time]');
-    const tip = $('[data-wave-tip]');
-    const list = $('[data-setlist]');
-    const NS = 'http://www.w3.org/2000/svg';
-    const ends = SETLIST.map((s, i) => (SETLIST[i + 1] ? SETLIST[i + 1].t : DVD_LEN));
-
-    list.innerHTML = SETLIST.map((s, i) => `<li><button type="button" data-seg="${i}" data-yt="${DVD_ID}" data-start="${s.t}" data-yt-title="${s.title.replace(/"/g, '&quot;')}"><span class="t">${s.title}${s.ined ? '<span class="tag">Inédita</span>' : ''}</span><span class="s">${fmt(s.t)}</span></button></li>`).join('');
-
-    let seed = 7;
-    const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
-    let groups = [];
-    function build() {
-      seed = 7;
-      const w = wave.clientWidth, h = wave.clientHeight;
-      svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
-      svg.innerHTML = '';
-      const step = w < 700 ? 4 : 6, bw = step < 5 ? 2 : 3;
-      const n = Math.floor(w / step);
-      groups = SETLIST.map((s, i) => {
-        const g = document.createElementNS(NS, 'g');
-        g.dataset.seg = i;
-        if (s.ined) g.classList.add('is-ined');
-        svg.appendChild(g);
-        return g;
-      });
-      for (let k = 0; k < n; k++) {
-        const t = ((k + 0.5) / n) * DVD_LEN;
-        const i = SETLIST.findIndex((s, j) => t >= s.t && t < ends[j]);
-        const s0 = SETLIST[i].t, s1 = ends[i];
-        const local = (t - s0) / (s1 - s0);
-        const edge = Math.min(1, Math.min(local, 1 - local) * 18);
-        const env = 0.35 + 0.45 * Math.abs(Math.sin(local * Math.PI * (2 + (i % 3)))) + 0.2 * Math.sin(local * Math.PI);
-        const amp = clamp(env * (0.55 + rnd() * 0.6) * edge, 0.04, 1);
-        const bh = Math.max(2, amp * h * 0.92);
-        const r = document.createElementNS(NS, 'rect');
-        r.setAttribute('x', k * step); r.setAttribute('y', (h - bh) / 2);
-        r.setAttribute('width', bw); r.setAttribute('height', bh); r.setAttribute('rx', 1);
-        groups[i].appendChild(r);
-      }
-      // áreas clicáveis por faixa
-      SETLIST.forEach((s, i) => {
-        const hit = document.createElementNS(NS, 'rect');
-        hit.setAttribute('class', 'seg-hit');
-        hit.setAttribute('x', (s.t / DVD_LEN) * w); hit.setAttribute('y', 0);
-        hit.setAttribute('width', ((ends[i] - s.t) / DVD_LEN) * w); hit.setAttribute('height', h);
-        hit.dataset.seg = i;
-        svg.appendChild(hit);
-      });
-    }
-    build();
-    let rw = wave.clientWidth;
-    addEventListener('resize', () => { if (Math.abs(wave.clientWidth - rw) > 40) { rw = wave.clientWidth; build(); } });
-
-    let current = -1;
-    function setActive(i) {
-      if (i === current) return;
-      current = i;
-      wave.classList.toggle('has-active', i > -1);
-      groups.forEach((g, j) => g.classList.toggle('is-active', j === i));
-      $$('button', list).forEach((b) => b.classList.toggle('is-active', +b.dataset.seg === i));
-      if (i > -1) tip.innerHTML = `${String(i + 1).padStart(2, '0')}. ${SETLIST[i].title}<small>${fmt(SETLIST[i].t)} no DVD, clique para assistir</small>`;
-    }
-    function pos(clientX) {
-      const r = wave.getBoundingClientRect();
-      const x = clamp(clientX - r.left, 0, r.width);
-      const t = (x / r.width) * DVD_LEN;
-      return { x, t, i: SETLIST.findIndex((s, j) => t >= s.t && t < ends[j]), w: r.width };
-    }
-    wave.addEventListener('pointermove', (e) => {
-      const p = pos(e.clientX);
-      head.style.transform = `translateX(${p.x}px)`;
-      time.textContent = fmt(p.t);
-      tip.style.left = `${clamp(p.x, 140, p.w - 140)}px`;
-      setActive(p.i);
-    });
-    wave.addEventListener('pointerleave', () => setActive(-1));
-    wave.addEventListener('click', (e) => {
-      const p = pos(e.clientX);
-      if (p.i < 0) return;
-      openPlayer(DVD_ID, SETLIST[p.i].title, SETLIST[p.i].t);
-    });
-    list.addEventListener('pointerover', (e) => { const b = e.target.closest('button'); if (b) setActive(+b.dataset.seg); });
-    list.addEventListener('pointerleave', () => setActive(-1));
-    list.addEventListener('focusin', (e) => { const b = e.target.closest('button'); if (b) setActive(+b.dataset.seg); });
-
-    if (!reduce) {
-      ScrollTrigger.create({
-        trigger: wave, start: 'top 80%', once: true,
-        onEnter: () => {
-          const rects = $$('rect:not(.seg-hit)', svg);
-          gsap.fromTo(rects, { scaleY: 0, transformOrigin: '50% 50%', transformBox: 'fill-box' }, { scaleY: 1, duration: 1.1, ease: 'expo.out', stagger: { each: 0.003, from: 'start' } });
-        }
-      });
-      gsap.from('.setlist__list li', { y: 30, opacity: 0, duration: 1, stagger: 0.05, scrollTrigger: { trigger: list, start: 'top 85%' } });
-    }
-  })();
-
-  /* =========================================================
      FORMATOS: cards que se empilham no scroll
      ========================================================= */
   (function stack() {
@@ -957,7 +853,6 @@
         .to(card, { scale: 0.9, ease: 'none' }, 0)
         .to(shade, { opacity: 0.6, ease: 'none' }, 0);
     });
-    gsap.from('.exp__head > p', { y: 24, opacity: 0, duration: 1.2, scrollTrigger: { trigger: '.exp', start: 'top 75%' } });
     // foco por teclado: leva o card para a posição natural (o próximo card sticky não cobre o botão)
     $('[data-stack]').addEventListener('focusin', (e) => {
       const card = e.target.closest('.stack__card'); if (!card) return;
@@ -1015,26 +910,18 @@
      CONTRATAÇÃO: pedido em 3 etapas com prévia da mensagem
      ========================================================= */
   const cta = $('[data-cta]');
-  const curtain = $('[data-curtain]');
-  if (curtain && !reduce) {
-    gsap.timeline({ scrollTrigger: { trigger: cta, start: 'top 85%', end: 'top -20%', scrub: 0.6 } })
-      .fromTo(curtain, { scaleY: 1 }, { scaleY: 0, ease: 'power2.inOut' }, 0)
-      .fromTo('.curtain span', { yPercent: 0 }, { yPercent: -60, ease: 'none' }, 0);
-  } else if (curtain) curtain.remove();
+
   if (fine) cta.addEventListener('pointermove', (e) => {
     const r = cta.getBoundingClientRect();
     cta.style.setProperty('--sx', `${e.clientX - r.left}px`);
     cta.style.setProperty('--sy', `${e.clientY - r.top}px`);
   });
   if (!reduce) {
-    const ctaSplit = new SplitText('.cta__l', { type: 'lines,words', linesClass: 'tl', wordsClass: 'tw', mask: 'lines' });
-    gsap.set(ctaSplit.words, { yPercent: 110 });
     ScrollTrigger.create({
       trigger: cta, start: 'top 60%', once: true,
       onEnter: () => {
         gsap.timeline()
-          .to(ctaSplit.words, { yPercent: 0, duration: 1.3, stagger: 0.07, ease: 'expo.out' })
-          .from('.cta__lead, .cta__wa, .cta__contacts > div', { y: 24, opacity: 0, duration: 1, stagger: 0.06 }, 0.4)
+          .from('.cta__wa, .cta__contacts > div', { y: 24, opacity: 0, duration: 1, stagger: 0.06 }, 0.4)
           .from('.booking', { y: 60, opacity: 0, duration: 1.2, ease: 'expo.out' }, 0.2);
       }
     });

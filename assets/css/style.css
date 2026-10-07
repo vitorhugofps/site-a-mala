@@ -6,6 +6,7 @@
    ========================================================= */
 @font-face { font-family: "Anton"; src: url(../fonts/anton-latin-400-normal.woff2) format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
 @font-face { font-family: "JetBrains Mono"; src: url(../fonts/jetbrains-mono-latin-500-normal.woff2) format("woff2"); font-weight: 500; font-style: normal; font-display: swap; }
+@font-face { font-family: "Cormorant Garamond"; src: url(../fonts/cormorant-garamond-latin-500-normal.woff2) format("woff2"); font-weight: 500; font-style: normal; font-display: swap; }
 @font-face { font-family: "Archivo"; src: url(../fonts/archivo-latin-wdth-normal.woff2) format("woff2-variations"), url(../fonts/archivo-latin-wdth-normal.woff2) format("woff2"); font-weight: 100 900; font-stretch: 62% 125%; font-style: normal; font-display: swap; }
 @font-face { font-family: "Bodoni Moda"; src: url(../fonts/bodoni-moda-latin-opsz-italic.woff2) format("woff2-variations"), url(../fonts/bodoni-moda-latin-opsz-italic.woff2) format("woff2"); font-weight: 400 900; font-style: italic; font-display: swap; }
 
@@ -680,3 +681,19 @@ h1 em, h2 em, .cta__title em, .gold { padding-top: .2em; padding-bottom: .14em; 
 .mp__close:focus:not(:focus-visible) { outline: none; }
 .sec-head h2.faixas-t, .faixas__head h2, .sec-head h2.galeria__title { font-size: clamp(56px, 10.6vw, 210px); white-space: nowrap; text-wrap: nowrap; line-height: .84; }
 @media (max-width: 860px) { .faixas__head h2, .sec-head h2.galeria__title { white-space: normal; text-wrap: balance; font-size: clamp(54px, 15vw, 96px); } }
+
+/* v6 — letreiro "A Mala" em serifada clássica, cor sólida discreta; rodapé com o letreiro no topo */
+:root { --areia: #c9b48a; }
+.sobre__wm, .footer__wm { -webkit-mask: none; mask: none; background: none; aspect-ratio: auto; font-family: "Cormorant Garamond", "Times New Roman", serif; font-weight: 500; text-transform: uppercase; color: var(--areia); -webkit-text-fill-color: var(--areia); letter-spacing: .14em; line-height: 1; white-space: nowrap; }
+.sobre__sign .sobre__wm { width: auto; font-size: clamp(26px, 2.4vw, 36px); }
+.footer { gap: 56px; padding-top: clamp(80px, 12vh, 140px); }
+.footer .footer__wm { order: -1; width: auto; font-size: clamp(64px, 13vw, 230px); letter-spacing: .1em; margin-right: -.1em; }
+.footer__base { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 24px; padding-top: 24px; border-top: 1px solid var(--linha); }
+.footer__base .footer__legal { border-top: 0; padding-top: 0; width: auto; text-align: right; }
+.footer__base .footer__logo { width: 72px; }
+.exp { padding-top: clamp(40px, 6vh, 80px); }
+.cta { padding-top: clamp(70px, 10vh, 120px); }
+@media (max-width: 860px) {
+  .footer__base { flex-direction: column; text-align: center; }
+  .footer__base .footer__legal { text-align: center; }
+}

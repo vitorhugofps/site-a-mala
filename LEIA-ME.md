@@ -8,7 +8,7 @@ Site estático, pronto para subir em qualquer hospedagem (Hostinger, Vercel, Net
 - `assets/css/style.css`: identidade visual (paleta, tipografia, layout e responsivo).
 - `assets/js/main.js`: abertura com o logo, troca de cores no scroll, títulos animados, player de música, setlist interativo, galeria e formulário do WhatsApp.
 - `assets/vendor/`: GSAP 3.15 (ScrollTrigger, SplitText) e Lenis, servidos localmente. Licenças em `LICENSES.txt`.
-- `assets/fonts/`: Anton (títulos), JetBrains Mono (rótulos), Archivo (texto) e Bodoni Moda itálico (nome do DVD), todas com licença OFL e servidas localmente.
+- `assets/fonts/`: Anton (títulos), JetBrains Mono (rótulos), Archivo (texto) e Bodoni Moda itálico (nome do DVD), Cormorant Garamond (letreiro A MALA), todas com licença OFL e servidas localmente.
 - `assets/audio/`: áudio das faixas Traumatizou e Reinicia, extraído do DVD.
 - `assets/video/`: vídeos gerados a partir das faixas 4K do DVD.
   - `intro-4k.mp4` (3840x2160) vai para telas grandes e retina; `intro-1080.mp4` é o padrão; `intro-720.mp4` vai para celular e conexão lenta. Se o 4K falhar, o site cai sozinho para o 1080.
@@ -27,11 +27,11 @@ Site estático, pronto para subir em qualquer hospedagem (Hostinger, Vercel, Net
 4. Números (+3 mi seguidores, +100 mi visualizações, 10 faixas, 41 min).
 5. O DVD: quadro que cresce até a tela cheia (o nome "Mais ou Menos Assim" é o único lugar com a fonte serifada).
 6. As mais assistidas do DVD, em ordem de visualizações no YouTube: 11 cards do mesmo tamanho, com foto e prévia em vídeo tiradas do DVD em 4K, e player embutido.
-7. Setlist interativo: os 41 minutos em forma de onda; clicar abre o DVD no minuto da música.
-8. Onde a Mala chega: cinco formatos em cards de tela cheia que se empilham no scroll, cada um com botão que abre o WhatsApp com a mensagem pronta.
+8. Formatos: seis cards de tela cheia que se empilham no scroll (Mala Móvel, Boteco Delivery, eventos privados, prefeituras, feiras e festivais, corporativo e marcas), cada um com botão que abre o WhatsApp com a mensagem pronta.
 9. Galeria com 12 momentos do DVD em 4K (só fotos em que ela aparece bem), em duas faixas que correm em sentidos opostos; clique abre em tela cheia.
 10. Redes sociais.
-11. Contratação: pedido em 3 etapas (tipo de evento, cidade/data/público, contato) com prévia da mensagem e envio pelo WhatsApp.
+11. Contratação: pedido em 3 etapas (tipo de evento, cidade/data/público, contato) com prévia da mensagem e envio pelo WhatsApp, seguido dos contatos diretos.
+12. Rodapé: letreiro "A MALA" em Cormorant Garamond, cor areia sólida, e os contatos abaixo.
 
 Player flutuante de música: toca Traumatizou e Reinicia (part. Naessa) direto do DVD, com play/pausa, próxima, progresso e equalizador real. O logo da abertura e o equalizador gigante da seção de números reagem à música.
 
